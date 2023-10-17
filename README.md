@@ -1,6 +1,6 @@
-# Mina zkApp: Sudoku
+# ZK age check
 
-This template uses TypeScript.
+<img src='agecheck.png'>
 
 ## How to build
 
