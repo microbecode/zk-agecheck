@@ -12,6 +12,19 @@ import {
 
 export { Sudoku, SudokuZkApp };
 
+class MyJSON extends Struct({
+  a: Field,
+  b: Field,
+}) {
+  /*
+  class MyStruct extends Struct({a: Field, b: Field}) {}
+    const original = new MyStruct({a: Field(0), b: Field(0)})
+    const fieldsArray = MyStruct.toFields(original)
+    // fieldsArray can be serialized to string and back to be sent over the wire
+    const reconstructed = MyStruct.fromFields(fieldsArray)
+  */
+}
+
 class Sudoku extends Struct({
   value: Provable.Array(Provable.Array(Field, 9), 9),
 }) {
@@ -36,6 +49,10 @@ class SudokuZkApp extends SmartContract {
    */
   @method init() {
     super.init();
+  }
+
+  @method bringJSON(json: MyJSON) {
+    // TODO
   }
 
   @method update(sudokuInstance: Sudoku) {
