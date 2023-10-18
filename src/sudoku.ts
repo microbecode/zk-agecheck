@@ -8,6 +8,7 @@ import {
   Poseidon,
   Struct,
   Provable,
+  Signature,
 } from 'o1js';
 
 export { Sudoku, SudokuZkApp };
@@ -51,8 +52,12 @@ class SudokuZkApp extends SmartContract {
     super.init();
   }
 
-  @method bringJSON(json: MyJSON) {
-    // TODO
+  @method verifyJSON(age: Field, signature: Signature) {
+    // Get the oracle public key from the contract state
+    // Evaluate whether the signature is valid for the provided data
+    // Check that the signature is valid
+    // Check that the provided credit score is greater than 700
+    // Emit an event containing the verified users id
   }
 
   @method update(sudokuInstance: Sudoku) {

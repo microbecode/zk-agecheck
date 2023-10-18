@@ -22,7 +22,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "npx eslint src/* --fix",
-    "start": "node build/src/run.js"
+    "start": "node build/src/run.js",
+    "keygen": "node src/keygen.js"
   },
   "lint-staged": {
     "**/*": [
@@ -47,5 +48,8 @@
   },
   "peerDependencies": {
     "o1js": "0.13.*"
+  },
+  "dependencies": {
+    "mina-signer": "^2.1.1"
   }
 }
