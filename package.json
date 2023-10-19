@@ -23,7 +23,8 @@
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "npx eslint src/* --fix",
     "start": "node build/src/run.js",
-    "keygen": "node src/keygen.js"
+    "keygen": "node src/keygen.js",
+    "sign": "node src/sign.js"
   },
   "lint-staged": {
     "**/*": [

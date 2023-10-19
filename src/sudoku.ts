@@ -9,9 +9,14 @@ import {
   Struct,
   Provable,
   Signature,
+  PublicKey,
 } from 'o1js';
 
 export { Sudoku, SudokuZkApp };
+
+const ORACLE_PUBLIC_KEY = 'B62qrjMtZDvEnbxGWBFwhutATZd1DgwdgNmsLCAwrrDrvobpC3tkhHU';
+
+@state(PublicKey) oraclePublicKey = State<PublicKey>();
 
 class MyJSON extends Struct({
   a: Field,
@@ -50,9 +55,15 @@ class SudokuZkApp extends SmartContract {
    */
   @method init() {
     super.init();
+    // Initialize contract state
+    this.oraclePublicKey.set(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
+    // Specify that caller should include signature with tx instead of proof
+    this.requireSignature();
   }
 
   @method verifyJSON(age: Field, signature: Signature) {
+    let pkey = 'B62qrjMtZDvEnbxGWBFwhutATZd1DgwdgNmsLCAwrrDrvobpC3tkhHU';
+    const validSignature = signature.verify(pkey, [id, creditScore]);
     // Get the oracle public key from the contract state
     // Evaluate whether the signature is valid for the provided data
     // Check that the signature is valid
