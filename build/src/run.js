@@ -1,3 +1,4 @@
+"use strict";
 // /**
 //  * This file specifies how to run the `SudokuZkApp` smart contract locally using the `Mina.LocalBlockchain()` method.
 //  * The `Mina.LocalBlockchain()` method specifies a ledger of accounts and contains logic for updating the ledger.
@@ -12,18 +13,15 @@
 // import { Sudoku, SudokuZkApp } from './sudoku.js';
 // import { cloneSudoku, generateSudoku, solveSudoku } from './sudoku-lib.js';
 // import { AccountUpdate, Mina, PrivateKey } from 'o1js';
-
 // // setup
 // const Local = Mina.LocalBlockchain();
 // Mina.setActiveInstance(Local);
-
 // const { privateKey: senderKey, publicKey: sender } = Local.testAccounts[0];
 // const sudoku = generateSudoku(0.5);
 // const zkAppPrivateKey = PrivateKey.random();
 // const zkAppAddress = zkAppPrivateKey.toPublicKey();
 // // create an instance of the smart contract
 // const zkApp = new SudokuZkApp(zkAppAddress);
-
 // console.log('Deploying and initializing Sudoku...');
 // await SudokuZkApp.compile();
 // let tx = await Mina.transaction(sender, () => {
@@ -40,16 +38,12 @@
 //  * that's why we don't need `tx.sign()` for the later transactions.)
 //  */
 // await tx.sign([zkAppPrivateKey, senderKey]).send();
-
 // console.log('Is the sudoku solved?', zkApp.isSolved.get().toBoolean());
-
 // let solution = solveSudoku(sudoku);
 // if (solution === undefined) throw Error('cannot happen');
-
 // // submit a wrong solution
 // let noSolution = cloneSudoku(solution);
 // noSolution[0][0] = (noSolution[0][0] % 9) + 1;
-
 // console.log('Submitting wrong solution...');
 // try {
 //   let tx = await Mina.transaction(sender, () => {
@@ -60,9 +54,7 @@
 // } catch {
 //   console.log('There was an error submitting the solution, as expected');
 // }
-
 // console.log('Is the sudoku solved?', zkApp.isSolved.get().toBoolean());
-
 // // submit the actual solution
 // console.log('Submitting solution...');
 // tx = await Mina.transaction(sender, () => {
@@ -70,5 +62,5 @@
 // });
 // await tx.prove();
 // await tx.sign([senderKey]).send();
-
 // console.log('Is the sudoku solved?', zkApp.isSolved.get().toBoolean());
+//# sourceMappingURL=run.js.map
