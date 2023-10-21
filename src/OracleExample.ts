@@ -10,7 +10,7 @@ import {
 
 // The public key of our trusted data provider
 const ORACLE_PUBLIC_KEY =
-  'B62qoAE4rBRuTgC42vqvEyUqCGhaZsW58SKVW4Ht8aYqP9UTvxFWBgy';
+  'B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd';
 
 export class OracleExample extends SmartContract {
   // Define contract state
