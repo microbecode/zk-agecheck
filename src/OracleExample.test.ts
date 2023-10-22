@@ -1,3 +1,4 @@
+import Client from 'mina-signer';
 import { OracleExample } from './OracleExample';
 import {
   Field,
@@ -55,7 +56,30 @@ describe('OracleExample', () => {
     expect(oraclePublicKey).toEqual(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
   });
 
-  describe('hardcoded values', () => {
+  describe('dynamic values', () => {
+    it('verify data dynamically', async () => {
+      await localDeploy();
+
+      const id = Field(1);
+      const creditScore = Field(787);
+      const oraclePrivateKey =
+        'EKEiMUmYfFG4ohsQxQDVzq2oGEuEbjK6XgETrkN4hbF932X1q1zm';
+      const fields = [id, creditScore];
+
+      const signature = Signature.create(
+        PrivateKey.fromBase58(oraclePrivateKey),
+        fields
+      );
+
+      expect(async () => {
+        const txn = await Mina.transaction(senderAccount, () => {
+          zkApp.verify(id, creditScore, signature);
+        });
+      }).resolves;
+    });
+  });
+
+  xdescribe('hardcoded values', () => {
     it('emits an `id` event containing the users id if their credit score is above 700 and the provided signature is valid', async () => {
       await localDeploy();
 

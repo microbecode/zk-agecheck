@@ -9,7 +9,6 @@ function signString(jsonData) {
 
   let data = 'a';
 
-  let afields = [10n, 20n, 30n, 340817401n, 2091283n, 1n, 0n];
   let fields = Encoding.stringToFields(data).map(BigInt);
   let client = new Client({ network: 'mainnet' });
   let signed = client.signFields(fields, privateKey);
