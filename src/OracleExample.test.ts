@@ -60,10 +60,10 @@ describe('OracleExample', () => {
       await localDeploy();
 
       const id = Field(1);
-      const creditScore = Field(787);
+      const age = Field(78);
       const oraclePrivateKey =
         'EKEiMUmYfFG4ohsQxQDVzq2oGEuEbjK6XgETrkN4hbF932X1q1zm';
-      const fields = [id, creditScore];
+      const fields = [id, age];
 
       const signature = Signature.create(
         PrivateKey.fromBase58(oraclePrivateKey),
@@ -72,7 +72,7 @@ describe('OracleExample', () => {
 
       expect(async () => {
         const txn = await Mina.transaction(senderAccount, () => {
-          zkApp.verify(id, creditScore, signature);
+          zkApp.verify(id, age, signature);
         });
       }).resolves;
     });
