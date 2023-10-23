@@ -1,4 +1,3 @@
-import Client from 'mina-signer';
 import { OracleExample } from './OracleExample';
 import {
   Field,
