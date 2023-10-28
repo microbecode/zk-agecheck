@@ -9,12 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Field, SmartContract, state, State, method, PublicKey, Signature, } from 'o1js';
 // The public key of our trusted data provider
-const ORACLE_PUBLIC_KEY = 'B62qoAE4rBRuTgC42vqvEyUqCGhaZsW58SKVW4Ht8aYqP9UTvxFWBgy';
-export class OracleExample extends SmartContract {
+const ORACLE_PUBLIC_KEY = 'B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd';
+const MINIMUM_AGE = 18;
+export class AgeCheck extends SmartContract {
     constructor() {
         super(...arguments);
         // Define contract state
         this.oraclePublicKey = State();
+        this.minimumAge = State();
         // Define contract events
         this.events = {
             verified: Field,
@@ -24,19 +26,22 @@ export class OracleExample extends SmartContract {
         super.init();
         // Initialize contract state
         this.oraclePublicKey.set(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
+        this.minimumAge.set(Field.from(MINIMUM_AGE));
         // Specify that caller should include signature with tx instead of proof
         this.requireSignature();
     }
-    verify(id, creditScore, signature) {
+    verify(id, age, signature) {
         // Get the oracle public key from the contract state
         const oraclePublicKey = this.oraclePublicKey.get();
         this.oraclePublicKey.assertEquals(oraclePublicKey);
+        const minimumAge = this.minimumAge.get();
+        this.minimumAge.assertEquals(minimumAge);
         // Evaluate whether the signature is valid for the provided data
-        const validSignature = signature.verify(oraclePublicKey, [id, creditScore]);
+        const validSignature = signature.verify(oraclePublicKey, [id, age]);
         // Check that the signature is valid
         validSignature.assertTrue();
         // Check that the provided credit score is greater than 700
-        creditScore.assertGreaterThanOrEqual(Field(700));
+        age.assertGreaterThanOrEqual(minimumAge);
         // Emit an event containing the verified users id
         this.emitEvent('verified', id);
     }
@@ -44,11 +49,15 @@ export class OracleExample extends SmartContract {
 __decorate([
     state(PublicKey),
     __metadata("design:type", Object)
-], OracleExample.prototype, "oraclePublicKey", void 0);
+], AgeCheck.prototype, "oraclePublicKey", void 0);
+__decorate([
+    state(Field),
+    __metadata("design:type", Object)
+], AgeCheck.prototype, "minimumAge", void 0);
 __decorate([
     method,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Field, Field, Signature]),
     __metadata("design:returntype", void 0)
-], OracleExample.prototype, "verify", null);
-//# sourceMappingURL=OracleExample.js.map
+], AgeCheck.prototype, "verify", null);
+//# sourceMappingURL=AgeCheck.js.map

@@ -1,3 +1,3 @@
-import { OracleExample } from './AgeCheck.js';
+import { AgeCheck } from './AgeCheck.js';
 
-export { OracleExample };
+export { AgeCheck };

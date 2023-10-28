@@ -1,21 +1,20 @@
 import Client from 'mina-signer';
-import { CircuitString } from 'o1js';
+import { CircuitString, Signature, PublicKey, Encoding, Field } from 'o1js';
 const client = new Client({ network: 'testnet' });
-const privateKey = 'EKFAeEdgVzB6RTLmNY11wFRz4LBJyDxF3wQG8gP1oh9pRXKDNEZs';
-const publicKey = 'B62qrjMtZDvEnbxGWBFwhutATZd1DgwdgNmsLCAwrrDrvobpC3tkhHU';
+const privateKey = 'EKEiMUmYfFG4ohsQxQDVzq2oGEuEbjK6XgETrkN4hbF932X1q1zm';
+const publicKey = 'B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd';
 function signString(jsonData) {
     let strData = JSON.stringify(jsonData);
-    strData = '15';
-    // Wrapped BigInt() around since it was giving TypeError: Cannot mix BigInt and other types, use explicit conversions
-    const fieldStr = BigInt(CircuitString.fromString(strData).hash());
-    const signature = client.signFields([fieldStr], privateKey);
-    let verified = client.verifyFields({
-        data: BigInt(strData),
-        signature: signature.signature,
-        publicKey: publicKey,
-    });
-    console.log('verified? ', verified);
-    console.log(signature);
+    let data = 'a';
+    let fields = Encoding.stringToFields(data).map(BigInt);
+    let client = new Client({ network: 'mainnet' });
+    let signed = client.signFields(fields, privateKey);
+    // verify with mina-signer
+    let fieldsSnarky = fields.map(Field);
+    let signature = Signature.fromBase58(signed.signature);
+    // Provable.assertEqual(Signature, signature, signatureSnarky);
+    let ress = signature.verify(PublicKey.fromBase58(publicKey), fieldsSnarky);
+    console.log('aaa', ress);
 }
 let json = {
     age: 5,
