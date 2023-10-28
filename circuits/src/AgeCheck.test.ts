@@ -70,6 +70,8 @@ describe('AgeCheck', () => {
         fields
       );
 
+      console.log('SIG:', signature.toBase58());
+
       expect(async () => {
         const txn = await Mina.transaction(senderAccount, () => {
           zkApp.verify(id, age, signature);
