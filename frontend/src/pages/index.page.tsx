@@ -3,11 +3,11 @@ import Image from "next/image";
 import { useEffect } from "react";
 import GradientBG from "../components/GradientBG.js";
 import styles from "../styles/Home.module.css";
+import { Mina, PublicKey } from "o1js";
 
 export default function Home() {
   useEffect(() => {
     (async () => {
-      const { Mina, PublicKey } = await import("snarkyjs");
       //const { Add } = await import("../../../circuits/build/src/");
 
       // Update this to use the address (public key) for your zkApp account.

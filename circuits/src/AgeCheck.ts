@@ -13,7 +13,7 @@ const ORACLE_PUBLIC_KEY =
   'B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd';
 const MINIMUM_AGE = 18;
 
-export class OracleExample extends SmartContract {
+export class AgeCheck extends SmartContract {
   // Define contract state
   @state(PublicKey) oraclePublicKey = State<PublicKey>();
   @state(Field) minimumAge = State<Field>();

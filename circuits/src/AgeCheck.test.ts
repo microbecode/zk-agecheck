@@ -1,4 +1,4 @@
-import { OracleExample } from './OracleExample';
+import { AgeCheck } from './AgeCheck';
 import {
   Field,
   Mina,
@@ -14,17 +14,17 @@ let proofsEnabled = false;
 const ORACLE_PUBLIC_KEY =
   'B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd';
 
-describe('OracleExample', () => {
+describe('AgeCheck', () => {
   let deployerAccount: PublicKey,
     deployerKey: PrivateKey,
     senderAccount: PublicKey,
     senderKey: PrivateKey,
     zkAppAddress: PublicKey,
     zkAppPrivateKey: PrivateKey,
-    zkApp: OracleExample;
+    zkApp: AgeCheck;
 
   beforeAll(async () => {
-    if (proofsEnabled) await OracleExample.compile();
+    if (proofsEnabled) await AgeCheck.compile();
   });
 
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe('OracleExample', () => {
       Local.testAccounts[1]);
     zkAppPrivateKey = PrivateKey.random();
     zkAppAddress = zkAppPrivateKey.toPublicKey();
-    zkApp = new OracleExample(zkAppAddress);
+    zkApp = new AgeCheck(zkAppAddress);
   });
 
   async function localDeploy() {
