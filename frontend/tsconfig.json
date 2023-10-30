@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "es2022",
-    "lib": ["dom", "esnext"],
-    "outDir": "./build",
-    "rootDir": ".",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
     "strictPropertyInitialization": false, // to enable generic constructors, e.g. on CircuitValue
     "skipLibCheck": true,
@@ -17,7 +15,16 @@
     "declaration": true,
     "sourceMap": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["./src"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

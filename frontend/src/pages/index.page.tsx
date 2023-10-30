@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import GradientBG from "../components/GradientBG.js";
 import styles from "../styles/Home.module.css";
 import {
@@ -16,6 +16,8 @@ import { AgeCheck } from "./AgeCheck";
 
 export default function Home() {
   let zkAppInstance: AgeCheck;
+
+  const [isVerified, setVerified] = useState<boolean>();
 
   useEffect(() => {
     (async () => {
@@ -78,8 +80,8 @@ export default function Home() {
         "7mXJiJsHzGHPFvJGF9hZpqc2qigR4GjFLJe6j56cwjwcT5LCKFPKQAzKNJs2g5JRHafqvWRPLuYDHJZhppuk9rYXnYipgocC"
       );
       console.log("verifying");
-      let x = await zkAppInstance.verify(Field(1), Field(78), sig);
-      console.log("result", x);
+      await zkAppInstance.verify(Field(1), Field(78), sig);
+      setVerified(true);
 
       // Update this to use the address (public key) for your zkApp account.
       // To try it out, you can try this address for an example "Add" smart contract that we've deployed to
@@ -106,6 +108,7 @@ export default function Home() {
         <main className={styles.main}>
           <div className={styles.center}></div>
           <p className={styles.start}>To-be check your age with ZK!</p>
+          {isVerified ? <p>A dummy signature has now been verified</p> : ""}
         </main>
       </GradientBG>
     </>
