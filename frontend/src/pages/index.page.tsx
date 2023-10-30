@@ -108,7 +108,11 @@ export default function Home() {
         <main className={styles.main}>
           <div className={styles.center}></div>
           <p className={styles.start}>To-be check your age with ZK!</p>
-          {isVerified ? <p>A dummy signature has now been verified</p> : ""}
+          {isVerified ? (
+            <p>A dummy signature with age has now been verified</p>
+          ) : (
+            ""
+          )}
         </main>
       </GradientBG>
     </>
