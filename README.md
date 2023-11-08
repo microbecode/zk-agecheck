@@ -1,10 +1,10 @@
 # ZK age check
 
-This project is for enabling functionality to check a user's age in a website, with Zero Knowledge technology.
-
-The project utilizes Mina ZK blockchain for generating ZK proofs and verifying them.
+This project is for enabling functionality to check a user's age in a website, with Zero Knowledge technology. The project utilizes Mina ZK blockchain for generating ZK proofs and verifying them.
 
 This project is currently under heavy construction. A lot of the documented functionality is not there yet.
+
+The current version is a Proof of Concept, which utilizes a Mina circuit for verifying signed data. No KYC provider is added yet.
 
 ## Pieces of the puzzle
 
