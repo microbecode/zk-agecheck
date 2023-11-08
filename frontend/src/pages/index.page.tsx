@@ -54,17 +54,7 @@ export default function Home() {
 
       console.log("starting deploy tx");
       await localDeploy();
-      // const txn = await Mina.transaction(deployerAccount, () => {
-      //   AccountUpdate.fundNewAccount(deployerAccount);
-      //   zkApp.deploy();
-      // });
-      // await txn.prove();
-      // await txn.sign([deployerKey, zkAppPrivateKey]).send();
 
-      // let txn = await Mina.transaction(feePayer, () => {
-      //   AccountUpdate.fundNewAccount(feePayer);
-      //   zkAppInstance.deploy({ zkappKey: zkAppPrivateKey });
-      // });
       console.log("deploying contract");
 
       //const txPromise = await txn.send();
