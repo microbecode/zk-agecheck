@@ -24,10 +24,6 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-defaults:
-  run:
-    working-directory: ./frontend
-
 jobs:
   # Build job
   build:
@@ -40,14 +36,14 @@ jobs:
         id: detect-package-manager
         run: |
           if [ -f "${{ github.workspace }}/frontend/yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
+            echo "manager=./frontend/yarn" >> $GITHUB_OUTPUT
+            echo "command=./frontend/install" >> $GITHUB_OUTPUT
+            echo "runner=./frontend/yarn" >> $GITHUB_OUTPUT
             exit 0
           elif [ -f "${{ github.workspace }}/frontend/package.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
+            echo "manager=./frontend/npm" >> $GITHUB_OUTPUT
+            echo "command=./frontend/ci" >> $GITHUB_OUTPUT
+            echo "runner=./frontend/npx --no-install" >> $GITHUB_OUTPUT
             exit 0
           else
             echo "Unable to determine package manager"
