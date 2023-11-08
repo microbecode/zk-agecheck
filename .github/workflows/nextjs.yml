@@ -24,13 +24,15 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+defaults:
+  run:
+    working-directory: ./frontend
+
 jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
