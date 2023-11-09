@@ -32,7 +32,6 @@ export default function Home() {
         senderKey: PrivateKey,
         zkAppAddress: PublicKey,
         zkAppPrivateKey: PrivateKey;
-      //zkApp: AgeCheck;
 
       ({ privateKey: deployerKey, publicKey: deployerAccount } =
         Local.testAccounts[0]);
