@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./reactCOIServiceWorker";
 import ZkappWorkerClient from "./zkappWorkerClient";
-import { PublicKey, Field } from "o1js";
+import { PublicKey, Field, Mina } from "o1js";
 import GradientBG from "../components/GradientBG.js";
 import styles from "../styles/Home.module.css";
 
@@ -35,15 +35,28 @@ export default function Home() {
 
     (async () => {
       if (!state.hasBeenSetup) {
+        const zkappPublicKey = PublicKey.fromBase58(
+          "B62qqTcKUMzy1bq5mUuHkNpMMYQtsYNgCHXPcw2eyPbfhSJvmA3yWAi"
+        );
+
         setDisplayText("Loading web worker...");
         console.log("Loading web worker...");
         const zkappWorkerClient = new ZkappWorkerClient();
-        await timeout(5);
+        await timeout(10);
 
         setDisplayText("Done loading web worker");
         console.log("Done loading web worker");
 
-        await zkappWorkerClient.setActiveInstanceToBerkeley();
+        // await zkappWorkerClient.setActiveInstanceToBerkeley();
+        const Berkeley = Mina.Network(
+          "https://proxy.berkeley.minaexplorer.com/graphql"
+        );
+        console.log("Berkeley Instance Created");
+        Mina.setActiveInstance(Berkeley);
+
+        await timeout(1);
+
+        console.log("set to berkeley");
 
         const mina = (window as any).mina;
 
@@ -58,6 +71,12 @@ export default function Home() {
         console.log(`Using key:${publicKey.toBase58()}`);
         setDisplayText(`Using key:${publicKey.toBase58()}`);
 
+        /*         console.log("fetching zk app account");
+        let { account, error } = await zkappWorkerClient.fetchAccount({
+          publicKey: zkappPublicKey,
+        });
+        console.log("account errrors?", account, error); */
+
         setDisplayText("Checking if fee payer account exists...");
         console.log("Checking if fee payer account exists...");
 
@@ -70,32 +89,36 @@ export default function Home() {
 
         console.log("Compiling zkApp...", res);
         setDisplayText("Compiling zkApp...");
-        await zkappWorkerClient.compileContract();
-        console.log("zkApp compiled");
-        setDisplayText("zkApp compiled...");
+        //await zkappWorkerClient.compileContract();
 
-        const zkappPublicKey = publicKey; /* PublicKey.fromBase58(
-          "B62qo2Be4Udo5EG1ux9yMJVkXe9Gz945cocN7Bn4W9DSYyeHZr1C3Ea"
-        ); */
+        // const { AgeCheck } = await import(
+        //   "../../../circuits/build/src/AgeCheck.js"
+        // );
+        // // let AgeCheck = AgeCheck;
+        // await AgeCheck.compile();
+        // await timeout(5);
 
-        await zkappWorkerClient.initZkappInstance(zkappPublicKey);
+        // console.log("zkApp compiled");
+        // setDisplayText("zkApp compiled...");
 
-        console.log("Getting zkApp state...");
-        setDisplayText("Getting zkApp state...");
-        await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
-        /*         const currentNum = await zkappWorkerClient.getNum();
-        console.log(`Current state in zkApp: ${currentNum.toString()}`); */
-        setDisplayText("");
+        // await zkappWorkerClient.initZkappInstance(zkappPublicKey);
 
-        setState({
-          ...state,
-          zkappWorkerClient,
-          hasWallet: true,
-          hasBeenSetup: true,
-          publicKey,
-          zkappPublicKey,
-          accountExists,
-        });
+        // console.log("Getting zkApp state...");
+        // setDisplayText("Getting zkApp state...");
+        // await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
+        // /*         const currentNum = await zkappWorkerClient.getNum();
+        // console.log(`Current state in zkApp: ${currentNum.toString()}`); */
+        // setDisplayText("");
+
+        // setState({
+        //   ...state,
+        //   zkappWorkerClient,
+        //   hasWallet: true,
+        //   hasBeenSetup: true,
+        //   publicKey,
+        //   zkappPublicKey,
+        //   accountExists,
+        // });
       }
     })();
   }, []);

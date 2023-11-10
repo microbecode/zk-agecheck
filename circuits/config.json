@@ -1,9 +1,9 @@
 {
   "version": 1,
   "deployAliases": {
-    "zkagecheck": {
+    "zk-age-check": {
       "url": "https://proxy.berkeley.minaexplorer.com/graphql",
-      "keyPath": "keys/zkagecheck.json",
+      "keyPath": "keys/zk-age-check.json",
       "feepayerKeyPath": "/home/laurip/.cache/zkapp-cli/keys/zkagecheck-acc.json",
       "feepayerAlias": "zkagecheck-acc",
       "fee": "0.1",

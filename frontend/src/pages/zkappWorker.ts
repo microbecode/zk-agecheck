@@ -18,7 +18,7 @@ const functions = {
   setActiveInstanceToBerkeley: async (args: {}) => {
     console.log("starting berkeley");
     const Berkeley = Mina.Network(
-      "https://proxy.berkeley.minaexplorer.com/graphql"
+      "https://proxy.berkeley.minaexplorer.com/graphql" //"https://api.minascan.io/node/berkeley/v1/graphql" //"https://proxy.berkeley.minaexplorer.com/graphql"
     );
     console.log("Berkeley Instance Created");
     Mina.setActiveInstance(Berkeley);
