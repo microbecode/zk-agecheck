@@ -3,6 +3,7 @@ import "./reactCOIServiceWorker.tsx";
 import ZkappWorkerClient from "./zkappWorkerClient.ts";
 import { PublicKey, Field, Mina } from "o1js";
 import styles from "../styles/Home.module.css";
+import React from "react";
 
 let transactionFee = 0.1;
 
