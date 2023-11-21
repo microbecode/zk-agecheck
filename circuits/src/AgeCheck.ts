@@ -29,7 +29,7 @@ export class AgeCheck extends SmartContract {
     this.oraclePublicKey.set(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
     this.minimumAge.set(Field.from(MINIMUM_AGE));
     // Specify that caller should include signature with tx instead of proof
-    this.requireSignature();
+    //this.requireSignature();
   }
 
   @method verify(id: Field, age: Field, signature: Signature) {

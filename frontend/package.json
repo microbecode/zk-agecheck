@@ -24,7 +24,9 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "encoding": "^0.1.13",
-    "o1js": "^0.13.1"
+    "encoding": "^0.1.13"
+  },
+  "peerDependencies": {
+    "o1js": "^0.14.1"
   }
 }
