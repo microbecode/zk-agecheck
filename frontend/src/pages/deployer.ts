@@ -36,7 +36,7 @@ export class AgeCheck extends SmartContract {
     this.oraclePublicKey.set(PublicKey.fromBase58(ORACLE_PUBLIC_KEY));
     this.minimumAge.set(Field.from(MINIMUM_AGE));
     // Specify that caller should include signature with tx instead of proof
-    this.requireSignature();
+    //this.requireSignature();
   }
 
   @method verify(id: Field, age: Field, signature: Signature) {
@@ -64,7 +64,11 @@ async function main() {
     mina: TESTNET,
   });
   Mina.setActiveInstance(network);
-  deployer = PrivateKey.fromBase58("BLAH");
+  const key = process.env.NEXT_PUBLIC_DEPLOYER_KEY;
+  if (!key) {
+    throw "no deployment key";
+  }
+  deployer = PrivateKey.fromBase58(key);
 
   const balanceDeployer =
     Number((await accountBalance(deployer.toPublicKey())).toBigInt()) / 1e9;

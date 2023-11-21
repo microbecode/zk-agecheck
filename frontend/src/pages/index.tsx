@@ -16,10 +16,9 @@ import { domy } from "./deployer";
 
 let transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
-const DEPLOYER = "BLAH";
 
 const zkappPublicKey = PublicKey.fromBase58(
-  "B62qjPvnKKqtbfpWNL3rGfNLwbFkP5X6DB1DTTumNMCDWcWnRcdpBa7"
+  "B62qjScikFVx1CeVRazFkcaSvkDfy8igZyMxQgmPQGbjHTmmcQFkEgP"
 );
 
 export default function Home() {
@@ -172,6 +171,12 @@ export default function Home() {
   const onSendTransaction = async () => {
     setState({ ...state, creatingTransaction: true });
 
+    if (window.mina !== undefined) {
+      const chainId = await window.mina.requestNetwork();
+      let account = await window.mina.requestAccounts();
+      console.log("getAddress account", account, chainId);
+    }
+
     setDisplayText("Creating a transaction...");
     console.log("Creating a transaction...");
 
@@ -188,9 +193,7 @@ export default function Home() {
       "7mXJiJsHzGHPFvJGF9hZpqc2qigR4GjFLJe6j56cwjwcT5LCKFPKQAzKNJs2g5JRHafqvWRPLuYDHJZhppuk9rYXnYipgocC"
     );
 
-    const { AgeCheck } = await import(
-      "../../../circuits/build/src/AgeCheck.js"
-    );
+    const { AgeCheck } = await import("./deployer");
 
     const zkApp = new AgeCheck(zkappPublicKey);
 
@@ -226,66 +229,6 @@ export default function Home() {
     setDisplayText(transactionLink);
 
     setState({ ...state, creatingTransaction: false });
-  };
-
-  const onDeploy = async () => {
-    console.log("Starting deployment..");
-    setDisplayText("Starting deployment...");
-
-    let deployer: PrivateKey | undefined = undefined;
-    const transactionFee = 150_000_000;
-    const network = Mina.Network(TESTNET);
-    Mina.setActiveInstance(network);
-    deployer = PrivateKey.fromBase58(DEPLOYER);
-
-    /*   const balanceDeployer =
-    Number((await accountBalance(deployer.toPublicKey())).toBigInt()) / 1e9;
-  console.log(
-    `Balance of the Deployer is`,
-    balanceDeployer.toLocaleString(`en`),
-    deployer.toPublicKey().toBase58()
-  ); */
-
-    const { AgeCheck } = await import(
-      "../../../circuits/build/src/AgeCheck.js"
-    );
-
-    await AgeCheck.compile();
-    const sender = deployer.toPublicKey();
-    const zkAppPrivateKey = PrivateKey.random();
-    const zkAppPublicKey = zkAppPrivateKey.toPublicKey();
-    console.log(
-      `deploying the MySmartContract contract to an address ${zkAppPublicKey.toBase58()} using the deployer with public key ${sender.toBase58()}...`
-    );
-    await fetchAccount({ publicKey: sender });
-    await fetchAccount({ publicKey: zkAppPublicKey });
-
-    console.log("fetched accounts");
-
-    const zkApp = new AgeCheck(zkAppPublicKey);
-    const transaction = await Mina.transaction(
-      { sender, fee: transactionFee },
-      () => {
-        AccountUpdate.fundNewAccount(sender);
-        zkApp.deploy({});
-      }
-    );
-
-    await transaction.prove();
-    transaction.sign([deployer, zkAppPrivateKey]);
-
-    console.log("Sending the deploy transaction...");
-    const tx = await transaction.send();
-
-    if (tx.hash() !== undefined) {
-      console.log(`
-    Success! Deploy transaction sent.
-  
-    Your smart contract state will be updated
-    as soon as the transaction is included in a block:
-    ${tx.hash()}
-    `);
-    }
   };
 
   // -------------------------------------------------------
@@ -370,7 +313,7 @@ export default function Home() {
         onClick={onTemp}
         disabled={state.creatingTransaction}
       >
-        DEPLOY2
+        In-project deploy
       </button>
       <button
         className={styles.card}
@@ -378,13 +321,6 @@ export default function Home() {
         disabled={state.creatingTransaction}
       >
         Prepare contract
-      </button>
-      <button
-        className={styles.card}
-        onClick={onDeploy}
-        disabled={state.creatingTransaction}
-      >
-        Deploy
       </button>
       <button
         className={styles.card}
