@@ -180,12 +180,40 @@ export default function Home() {
     setDisplayText("Creating a transaction...");
     console.log("Creating a transaction...");
 
-    await fetchAccount({
-      publicKey: state.publicKey!,
+    const { AgeCheck } = await import("./deployer");
+
+    await AgeCheck.compile();
+
+    const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
+    const network = Mina.Network({
+      mina: TESTNET,
     });
-    await fetchAccount({
-      publicKey: zkappPublicKey,
+    Mina.setActiveInstance(network);
+
+    const mina = (window as any).mina;
+
+    if (mina == null) {
+      console.error("No Mina wallet");
+      return;
+    }
+
+    const publicKeyBase58: string = (await mina.requestAccounts())[0];
+    const publicKey = PublicKey.fromBase58(publicKeyBase58);
+
+    console.log("Using wallet", publicKey);
+
+    const aa = await fetchAccount({
+      publicKey: publicKey,
     });
+    console.log("fee payer checked", aa);
+    await fetchAccount({ publicKey: zkappPublicKey });
+    const zkApp2 = new AgeCheck(zkappPublicKey);
+    const hasAccount = Mina.hasAccount(zkappPublicKey);
+    const age = zkApp2.minimumAge.get();
+    //const oraclePublicKey = zkApp2.oraclePublicKey.get();
+    console.log("hasAccount", hasAccount);
+    //console.log("age", age.toJSON());
+    //console.log("oraclePublicKey", oraclePublicKey.toBase58());
 
     //await state.zkappWorkerClient!.createUpdateTransaction();
 
@@ -193,13 +221,13 @@ export default function Home() {
       "7mXJiJsHzGHPFvJGF9hZpqc2qigR4GjFLJe6j56cwjwcT5LCKFPKQAzKNJs2g5JRHafqvWRPLuYDHJZhppuk9rYXnYipgocC"
     );
 
-    const { AgeCheck } = await import("./deployer");
-
     const zkApp = new AgeCheck(zkappPublicKey);
+    console.log("creating tx");
 
     const transaction = await Mina.transaction(() => {
       zkApp.verify(Field(1), Field(78), sig);
     });
+    console.log("Prettified", transaction.toPretty());
     //state.transaction = transaction;
 
     setDisplayText("Creating proof...");
