@@ -120,6 +120,6 @@ async function accountBalance(address: PublicKey): Promise<UInt64> {
   else return UInt64.from(0);
 }
 
-export const domy = async () => {
+export const deploy = async () => {
   main();
 };

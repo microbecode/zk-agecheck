@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./reactCOIServiceWorker";
-//import ZkappWorkerClient from "./zkappWorkerClient.ts";
 import {
   PublicKey,
   Field,
@@ -12,7 +11,7 @@ import {
 } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
-import { domy } from "./deployer";
+import { deploy } from "./deployer";
 
 let transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -21,156 +20,20 @@ const zkappPublicKey = PublicKey.fromBase58(
   "B62qjScikFVx1CeVRazFkcaSvkDfy8igZyMxQgmPQGbjHTmmcQFkEgP"
 );
 
-export default function Home() {
-  const [state, setState] = useState({
-    // zkappWorkerClient: null as null | ZkappWorkerClient,
-    hasWallet: null as null | boolean,
-    hasBeenSetup: false,
-    accountExists: false,
-    publicKey: null as null | PublicKey,
-    zkappPublicKey: null as null | PublicKey,
-    creatingTransaction: false,
-  });
+declare global {
+  interface Window {
+    mina?: any;
+  }
+}
 
+export default function Home() {
   const [displayText, setDisplayText] = useState("");
   const [transactionlink, setTransactionLink] = useState("");
-
-  // -------------------------------------------------------
-  // Do Setup
-
-  const onPrepare = async () => {
-    async function timeout(seconds: number): Promise<void> {
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, seconds * 1000);
-      });
-    }
-
-    (async () => {
-      if (!state.hasBeenSetup) {
-        setDisplayText("Loading web worker...");
-        console.log("Loading web worker...");
-        //const zkappWorkerClient = new ZkappWorkerClient();
-        await timeout(10);
-
-        setDisplayText("Done loading web worker");
-        console.log("Done loading web worker");
-
-        // await zkappWorkerClient.setActiveInstanceToBerkeley();
-        const usednetwork = Mina.Network(TESTNET);
-        console.log("Berkeley Instance Created");
-        Mina.setActiveInstance(usednetwork);
-
-        await timeout(1);
-
-        console.log("set to berkeley");
-
-        const mina = (window as any).mina;
-
-        if (mina == null) {
-          setState({ ...state, hasWallet: false });
-          return;
-        }
-
-        const publicKeyBase58: string = (await mina.requestAccounts())[0];
-        const publicKey = PublicKey.fromBase58(publicKeyBase58);
-
-        console.log(`Using key:${publicKey.toBase58()}`);
-        setDisplayText(`Using key:${publicKey.toBase58()}`);
-
-        /*         console.log("fetching zk app account");
-        let { account, error } = await zkappWorkerClient.fetchAccount({
-          publicKey: zkappPublicKey,
-        });
-        console.log("account errrors?", account, error); */
-
-        setDisplayText("Checking if fee payer account exists...");
-        console.log("Checking if fee payer account exists...");
-
-        const res = await fetchAccount({ publicKey });
-
-        // const res = await zkappWorkerClient.fetchAccount({
-        //   publicKey: publicKey!,
-        // });
-        const accountExists = res.error == null;
-
-        //await zkappWorkerClient.loadContract();
-
-        console.log("Compiling zkApp...", res);
-        setDisplayText("Compiling zkApp...");
-        //await zkappWorkerClient.compileContract();
-
-        const { AgeCheck } = await import(
-          "../../../circuits/build/src/AgeCheck.js"
-        );
-        // let AgeCheck = AgeCheck;
-        await AgeCheck.compile();
-        await timeout(5);
-
-        console.log("zkApp compiled");
-        setDisplayText("zkApp compiled...");
-
-        //await zkappWorkerClient.initZkappInstance(zkappPublicKey);
-
-        console.log("Getting zkApp state...");
-        setDisplayText("Getting zkApp state...");
-        /*  await zkappWorkerClient.fetchAccount({
-          publicKey: zkappPublicKey,
-        }); */
-        const res2 = await fetchAccount({
-          publicKey: zkappPublicKey,
-        });
-        console.log("ZK acc res", res2);
-        /*         const currentNum = await zkappWorkerClient.getNum();
-        console.log(`Current state in zkApp: ${currentNum.toString()}`); */
-        setDisplayText("");
-
-        setState({
-          ...state,
-          //zkappWorkerClient,
-          hasWallet: true,
-          hasBeenSetup: true,
-          publicKey,
-          zkappPublicKey,
-          accountExists,
-        });
-      }
-    })();
-  };
-
-  // -------------------------------------------------------
-  // Wait for account to exist, if it didn't
-
-  useEffect(() => {
-    (async () => {
-      if (state.hasBeenSetup && !state.accountExists) {
-        for (;;) {
-          setDisplayText("Checking if fee payer account exists2...");
-          console.log("Checking if fee payer account exists2...");
-          /*  const res = await state.zkappWorkerClient!.fetchAccount({
-            publicKey: state.publicKey!,
-          }); */
-          const res = await fetchAccount({
-            publicKey: state.publicKey!,
-          });
-          const accountExists = res.error == null;
-          if (accountExists) {
-            break;
-          }
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-        }
-        setState({ ...state, accountExists: true });
-      }
-    })();
-  }, [state.hasBeenSetup]);
 
   // -------------------------------------------------------
   // Send a transaction
 
   const onSendTransaction = async () => {
-    setState({ ...state, creatingTransaction: true });
-
     if (window.mina !== undefined) {
       const chainId = await window.mina.requestNetwork();
       let account = await window.mina.requestAccounts();
@@ -255,8 +118,6 @@ export default function Home() {
 
     setTransactionLink(transactionLink);
     setDisplayText(transactionLink);
-
-    setState({ ...state, creatingTransaction: false });
   };
 
   // -------------------------------------------------------
@@ -267,7 +128,7 @@ export default function Home() {
     setDisplayText("Getting zkApp state...");
 
     await fetchAccount({
-      publicKey: state.zkappPublicKey!,
+      publicKey: zkappPublicKey,
     });
 
     /*  await state.zkappWorkerClient!.fetchAccount({
@@ -282,7 +143,7 @@ export default function Home() {
   // -------------------------------------------------------
   // Create UI elements
 
-  let hasWallet;
+  /*   let hasWallet;
   if (state.hasWallet != null && !state.hasWallet) {
     const auroLink = "https://www.aurowallet.com/";
     const auroLinkElem = (
@@ -290,8 +151,8 @@ export default function Home() {
         Install Auro wallet here
       </a>
     );
-    hasWallet = <div>Could not find a wallet. {auroLinkElem}</div>;
-  }
+    hasWallet = <div>Could not find a wallet. {auroLinkElem}</div>; 
+  }*/
 
   const stepDisplay = transactionlink ? (
     <a href={displayText} target="_blank" rel="noreferrer">
@@ -307,11 +168,11 @@ export default function Home() {
       style={{ fontWeight: "bold", fontSize: "1.5rem", paddingBottom: "5rem" }}
     >
       {stepDisplay}
-      {hasWallet}
+      {/* {hasWallet} */}
     </div>
   );
 
-  let accountDoesNotExist;
+  /*   let accountDoesNotExist;
   if (state.hasBeenSetup && !state.accountExists) {
     const faucetLink =
       "https://faucet.minaprotocol.com/?address=" + state.publicKey!.toBase58();
@@ -323,11 +184,7 @@ export default function Home() {
         </a>
       </div>
     );
-  }
-
-  const onTemp = async () => {
-    domy();
-  };
+  } */
 
   let mainContent;
   // if (state.hasBeenSetup && state.accountExists) {
@@ -338,22 +195,15 @@ export default function Home() {
         </div> */}
       <button
         className={styles.card}
-        onClick={onTemp}
-        disabled={state.creatingTransaction}
+        onClick={deploy}
+        /* disabled={state.creatingTransaction} */
       >
         In-project deploy
       </button>
       <button
         className={styles.card}
-        onClick={onPrepare}
-        disabled={state.creatingTransaction}
-      >
-        Prepare contract
-      </button>
-      <button
-        className={styles.card}
         onClick={onSendTransaction}
-        disabled={state.creatingTransaction}
+        /*  disabled={state.creatingTransaction} */
       >
         Send Transaction
       </button>
@@ -368,7 +218,7 @@ export default function Home() {
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
         {setup}
-        {accountDoesNotExist}
+        {/*   {accountDoesNotExist} */}
         {mainContent}
         HALLO
       </div>
