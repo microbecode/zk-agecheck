@@ -12,6 +12,7 @@ import {
 import styles from "../styles/Home.module.css";
 import React from "react";
 import { deploy } from "./deployer";
+import { SignedAgeData } from "@/types";
 
 let transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -34,12 +35,6 @@ export default function Home() {
   // Send a transaction
 
   const onSendTransaction = async () => {
-    if (window.mina !== undefined) {
-      const chainId = await window.mina.requestNetwork();
-      let account = await window.mina.requestAccounts();
-      console.log("getAddress account", account, chainId);
-    }
-
     setDisplayText("Creating a transaction...");
     console.log("Creating a transaction...");
 
@@ -80,16 +75,21 @@ export default function Home() {
 
     //await state.zkappWorkerClient!.createUpdateTransaction();
 
-    let sig = Signature.fromBase58(
-      "7mXJiJsHzGHPFvJGF9hZpqc2qigR4GjFLJe6j56cwjwcT5LCKFPKQAzKNJs2g5JRHafqvWRPLuYDHJZhppuk9rYXnYipgocC"
-    );
-
     const zkApp = new AgeCheck(zkappPublicKey);
     console.log("creating tx");
 
+    const response = await fetch("/api/kycProvider");
+    let ageData = (await response.json()) as SignedAgeData;
+
     const transaction = await Mina.transaction(() => {
-      zkApp.verify(Field(1), Field(78), sig);
+      zkApp.verify(
+        Field(ageData.id),
+        Field(ageData.age),
+        Signature.fromBase58(ageData.sig)
+      );
+      //zkApp.verify(Field(1), Field(78), sig);
     });
+
     console.log("Prettified", transaction.toPretty());
     //state.transaction = transaction;
 
