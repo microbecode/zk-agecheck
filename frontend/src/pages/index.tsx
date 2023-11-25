@@ -38,6 +38,19 @@ export default function Home() {
     setDisplayText("Creating a transaction...");
     console.log("Creating a transaction...");
 
+    const response = await fetch("/api/kycProvider", {
+      method: "POST",
+      body: JSON.stringify({
+        id: 1, // FIXME
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+    let ageData = (await response.json()) as SignedAgeData;
+
+    console.log("got age data response", ageData);
+
     const { AgeCheck } = await import("./deployer");
 
     await AgeCheck.compile();
@@ -77,9 +90,6 @@ export default function Home() {
 
     const zkApp = new AgeCheck(zkappPublicKey);
     console.log("creating tx");
-
-    const response = await fetch("/api/kycProvider");
-    let ageData = (await response.json()) as SignedAgeData;
 
     const transaction = await Mina.transaction(() => {
       zkApp.verify(
