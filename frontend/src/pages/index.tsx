@@ -87,7 +87,6 @@ export default function Home() {
         Field(ageData.age),
         Signature.fromBase58(ageData.sig)
       );
-      //zkApp.verify(Field(1), Field(78), sig);
     });
 
     console.log("Prettified", transaction.toPretty());
