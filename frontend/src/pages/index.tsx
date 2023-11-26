@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./reactCOIServiceWorker";
+import "../components/reactCOIServiceWorker";
 import {
   PublicKey,
   Field,
@@ -11,7 +11,7 @@ import {
 } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
-import { deploy } from "./deployer";
+import { deploy } from "../components/deployer";
 import { SignedAgeData } from "@/types";
 
 let transactionFee = 0.1;
@@ -51,7 +51,7 @@ export default function Home() {
 
     console.log("got age data response", ageData);
 
-    const { AgeCheck } = await import("./deployer");
+    const { AgeCheck } = await import("../components/deployer");
 
     await AgeCheck.compile();
 
@@ -78,15 +78,6 @@ export default function Home() {
     });
     console.log("fee payer checked", aa);
     await fetchAccount({ publicKey: zkappPublicKey });
-    const zkApp2 = new AgeCheck(zkappPublicKey);
-    const hasAccount = Mina.hasAccount(zkappPublicKey);
-    const age = zkApp2.minimumAge.get();
-    //const oraclePublicKey = zkApp2.oraclePublicKey.get();
-    console.log("hasAccount", hasAccount);
-    //console.log("age", age.toJSON());
-    //console.log("oraclePublicKey", oraclePublicKey.toBase58());
-
-    //await state.zkappWorkerClient!.createUpdateTransaction();
 
     const zkApp = new AgeCheck(zkappPublicKey);
     console.log("creating tx");
