@@ -53,7 +53,8 @@ export default function Home() {
 
     const { AgeCheck } = await import("../components/deployer");
 
-    await AgeCheck.compile();
+    const verificationKey = await AgeCheck.compile();
+    const vkJson = JSON.stringify(verificationKey);
 
     const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
     const network = Mina.Network({
@@ -73,10 +74,6 @@ export default function Home() {
 
     console.log("Using wallet", publicKey);
 
-    const aa = await fetchAccount({
-      publicKey: publicKey,
-    });
-    console.log("fee payer checked", aa);
     await fetchAccount({ publicKey: zkappPublicKey });
 
     const zkApp = new AgeCheck(zkappPublicKey);
@@ -96,12 +93,26 @@ export default function Home() {
     setDisplayText("Creating proof...");
     console.log("Creating proof...");
     //await state.zkappWorkerClient!.proveUpdateTransaction();
-    await transaction.prove();
+    const proof = await transaction.prove();
+
+    const proofJSON = JSON.stringify(proof, (_, v) =>
+      typeof v === "bigint" ? v.toString() : v
+    );
+
+    console.log("Verification key", vkJson);
+    console.log("Proof", transaction.toPretty());
+    console.log("Collective proof", proofJSON);
+    console.log("parsed proof", transaction.toPretty()[1].authorization.proof);
+    return; //temp
 
     console.log("Requesting send transaction...");
     setDisplayText("Requesting send transaction...");
-    //const transactionJSON = await state.zkappWorkerClient!.getTransactionJSON();
     const transactionJSON = await transaction.toJSON();
+
+    const aa = await fetchAccount({
+      publicKey: publicKey,
+    });
+    console.log("fee payer checked", aa);
 
     setDisplayText("Getting transaction JSON...");
     console.log("Getting transaction JSON...");
