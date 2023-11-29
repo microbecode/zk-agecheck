@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import "../components/reactCOIServiceWorker";
-import {
-  PublicKey,
-  Field,
-  Mina,
-  fetchAccount,
-  Signature,
-  PrivateKey,
-  AccountUpdate,
-} from "o1js";
+import { PublicKey, Field, Mina, fetchAccount, Signature } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
 import { deploy } from "../components/deployer";
@@ -56,7 +48,6 @@ export default function Home() {
     const verificationKey = await AgeCheck.compile();
     const vkJson = JSON.stringify(verificationKey);
 
-    const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
     const network = Mina.Network({
       mina: TESTNET,
     });
