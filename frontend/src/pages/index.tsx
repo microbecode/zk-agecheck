@@ -88,21 +88,15 @@ export default function Home() {
     });
 
     console.log("Prettified", transaction.toPretty());
-    //state.transaction = transaction;
 
     setDisplayText("Creating proof...");
     console.log("Creating proof...");
-    //await state.zkappWorkerClient!.proveUpdateTransaction();
     const proof = await transaction.prove();
 
-    const proofJSON = JSON.stringify(proof, (_, v) =>
-      typeof v === "bigint" ? v.toString() : v
-    );
-
+    const trimmedProof = proof.find((p) => p !== undefined);
+    console.log("Proof", trimmedProof!.toJSON());
     console.log("Verification key", vkJson);
-    console.log("Proof", transaction.toPretty());
-    console.log("Collective proof", proofJSON);
-    console.log("parsed proof", transaction.toPretty()[1].authorization.proof);
+
     return; //temp
 
     console.log("Requesting send transaction...");
