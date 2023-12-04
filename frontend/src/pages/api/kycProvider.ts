@@ -3,6 +3,8 @@ import { SignedAgeData } from "@/types";
 import { error } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Field, PrivateKey, Signature } from "o1js";
+import { NextRequest, NextResponse } from "next/server";
+import formidable, { IncomingForm, File } from "formidable";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -10,10 +12,44 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   };
 }
 
-export default function handler(
+//export const FormidableError = formidable.errors.FormidableError;
+
+export const parseForm = async (
+  req: NextApiRequest
+): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+  return new Promise(async (resolve, reject) => {
+    resolve({
+      files: {},
+      fields: {},
+    });
+  });
+};
+
+/* export async function POST(req: NextRequest) {
+  const formData = await req.formData();
+  const files = formData.getAll("files") as File[];
+  console.log("FILEEEEEE", files);
+} */
+
+const handler = async (
   req: ExtendedNextApiRequest,
   res: NextApiResponse<SignedAgeData>
-) {
+) => {
+  try {
+    const { fields, files } = await parseForm(req);
+
+    console.log("DATAAAA", { fields, files });
+
+    /* res.status(200).json({
+      data: {
+        url: "/uploaded-file-url",
+      },
+      error: null,
+    }); */
+  } catch (e) {
+    console.error(e);
+  }
+
   const oracle_key = process.env.ORACLE_PRIVATE_KEY;
 
   if (!oracle_key) {
@@ -21,9 +57,9 @@ export default function handler(
     throw error("No oracle key set");
   }
 
-  console.log("got req", req);
+  //console.log("got req", req);
 
-  const idStr = req.body.id;
+  const idStr = 1; //req.body.id;
   const ageNum = 78; // FIXME: should probably get the data from somewhere
 
   const id = Field(idStr);
@@ -43,4 +79,6 @@ export default function handler(
     sig: signature.toBase58(),
   };
   res.status(200).json(data);
-}
+};
+
+export default handler;
