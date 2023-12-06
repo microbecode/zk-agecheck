@@ -20,8 +20,8 @@ interface ExtendedNextApiRequest extends NextApiRequest {
 
 export const parseForm = async (
   req: NextApiRequest
-): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
-  console.log("Start parsing");
+  //): Promise<{ fields: formidable.Fields; files: formidable.Files }> => { // FIXME
+): Promise<string> => {
   return new Promise(async (resolve, reject) => {
     const uploadDir = join(
       process.env.ROOT_DIR || process.cwd(),
@@ -51,18 +51,27 @@ export const parseForm = async (
         }`;
         return filename;
       },
-      // filter: (part) => {
-      //   return (
-      //     part.name === "media" && (part.mimetype?.includes("image") || false)
-      //   );
-      // },
+      filter: (part) => {
+        return (
+          part.name === "media" && (part.mimetype?.includes("image") || false)
+        );
+      },
     });
 
-    form.parse(req, function (err, fields, files) {
-      console.log("parsingggg", err);
+    form.parse(req, () => {
+      //console.log("file contents", req.body);
+      console.log(
+        "Got file with content length about ",
+        req.body.toString().length
+      );
+      resolve("dummy");
+      // TODO: do something with the file
+    });
+
+    /* form.parse(req, function (err, fields, files) {
       if (err) reject(err);
       else resolve({ fields, files });
-    });
+    }); */
   });
 };
 
@@ -77,10 +86,10 @@ const handler = async (
   res: NextApiResponse<SignedAgeData>
 ) => {
   try {
-    console.log("before parse");
-    const { fields, files } = await parseForm(req);
+    //const { fields, files } = await parseForm(req);
+    await parseForm(req);
 
-    console.log("DATAAAA", { fields, files });
+    //console.log("DATAAAA", { fields, files });
 
     /* res.status(200).json({
       data: {
