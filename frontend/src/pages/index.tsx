@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "../components/reactCOIServiceWorker";
 import { PublicKey, Field, Mina, fetchAccount, Signature } from "o1js";
 import styles from "../styles/Home.module.css";
@@ -22,6 +22,7 @@ declare global {
 export default function Home() {
   const [displayText, setDisplayText] = useState("");
   const [transactionlink, setTransactionLink] = useState("");
+  const [uploadFile, setUploadFile] = useState<File>();
 
   // -------------------------------------------------------
   // Send a transaction
@@ -119,13 +120,33 @@ export default function Home() {
   // -------------------------------------------------------
   // Refresh the current state
 
-  const onRefreshCurrentNum = async () => {
+  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    // Update the state
+    if (event?.target?.files && event.target.files.length > 0) {
+      setUploadFile(event.target.files[0]);
+    }
+  };
+
+  const submitDoc = async () => {
     console.log("Getting zkApp state...");
     setDisplayText("Getting zkApp state...");
+    if (!uploadFile) {
+      return;
+    }
 
-    await fetchAccount({
-      publicKey: zkappPublicKey,
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("src", uploadFile, uploadFile.name);
+
+    await fetch("/api/kycProvider", {
+      method: "POST",
+      body: formData,
     });
+
+    /*  await fetchAccount({
+      publicKey: zkappPublicKey,
+    }); */
 
     /*  await state.zkappWorkerClient!.fetchAccount({
       publicKey: state.zkappPublicKey!,
@@ -203,9 +224,10 @@ export default function Home() {
       >
         Send Transaction
       </button>
-      <button className={styles.card} onClick={onRefreshCurrentNum}>
-        Get Latest State
+      <button className={styles.card} onClick={submitDoc}>
+        Submit doc
       </button>
+      <input type="file" onChange={onFileChange} />
     </div>
   );
   // }

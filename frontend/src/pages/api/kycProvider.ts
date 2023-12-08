@@ -4,11 +4,12 @@ import { error } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Field, PrivateKey, Signature } from "o1js";
 import { NextRequest, NextResponse } from "next/server";
-import formidable, { IncomingForm, File } from "formidable";
+import * as formidable from "formidable";
 import mime from "mime";
 import { join } from "path";
 import * as dateFn from "date-fns";
 import { mkdir, stat } from "fs/promises";
+import fs from "fs";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -16,87 +17,51 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   };
 }
 
-//export const FormidableError = formidable.errors.FormidableError;
-
-export const parseForm = async (
+export const parseForm = (
   req: NextApiRequest
-  //): Promise<{ fields: formidable.Fields; files: formidable.Files }> => { // FIXME
-): Promise<string> => {
-  return new Promise(async (resolve, reject) => {
+): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+  return new Promise((resolve, reject) => {
+    const form = new formidable.IncomingForm();
     const uploadDir = join(
       process.env.ROOT_DIR || process.cwd(),
       `/uploads/${dateFn.format(Date.now(), "dd-MM-Y")}`
     );
 
-    try {
-      await stat(uploadDir);
-    } catch (e: any) {
-      if (e.code === "ENOENT") {
-        await mkdir(uploadDir, { recursive: true });
-      } else {
-        console.error(e);
-        reject(e);
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error("Error parsing form:", err);
+        reject(err);
         return;
       }
-    }
 
-    const form = formidable({
-      maxFiles: 2,
-      maxFileSize: 1024 * 1024, // 1mb
-      uploadDir,
-      filename: (_name, _ext, part) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        const filename = `${part.name || "unknown"}-${uniqueSuffix}.${
-          mime.getExtension(part.mimetype || "") || "unknown"
-        }`;
-        return filename;
-      },
-      filter: (part) => {
-        return (
-          part.name === "media" && (part.mimetype?.includes("image") || false)
-        );
-      },
+      try {
+        await fs.promises.stat(uploadDir);
+      } catch (e: any) {
+        if (e.code === "ENOENT") {
+          await fs.promises.mkdir(uploadDir, { recursive: true });
+        } else {
+          console.error(e);
+          reject(e);
+          return;
+        }
+      }
+
+      resolve({ fields, files });
     });
-
-    form.parse(req, () => {
-      //console.log("file contents", req.body);
-      console.log(
-        "Got file with content length about ",
-        req.body.toString().length
-      );
-      resolve("dummy");
-      // TODO: do something with the file
-    });
-
-    /* form.parse(req, function (err, fields, files) {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    }); */
   });
 };
 
-/* export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const files = formData.getAll("files") as File[];
-  console.log("FILEEEEEE", files);
-} */
+export const config = { api: { bodyParser: false } };
 
 const handler = async (
   req: ExtendedNextApiRequest,
   res: NextApiResponse<SignedAgeData>
 ) => {
   try {
-    //const { fields, files } = await parseForm(req);
-    await parseForm(req);
+    // console.log("got req", req);
+    const { fields, files } = await parseForm(req);
 
-    //console.log("DATAAAA", { fields, files });
-
-    /* res.status(200).json({
-      data: {
-        url: "/uploaded-file-url",
-      },
-      error: null,
-    }); */
+    console.log("DATAAAA", files);
   } catch (e) {
     console.error(e);
   }

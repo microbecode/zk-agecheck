@@ -16,7 +16,7 @@ export default function Home() {
             setShowFrame(true);
           }}
         >
-          Submit ID
+          Open KYC provider
         </button>
         {showFrame ? <iframe src="." height="500px"></iframe> : ""}
       </div>
