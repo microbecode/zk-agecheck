@@ -3,9 +3,27 @@ import "../components/reactCOIServiceWorker";
 import { PublicKey, Field, Mina, fetchAccount, Signature } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
+import { createPortal } from "react-dom";
+import Home from ".";
 
-export default function Home() {
+export default function Enter() {
   const [showFrame, setShowFrame] = useState(false);
+
+  const [receivedSignature, setReceivedSignature] = useState<string>();
+
+  /*   useEffect(() => {
+    const handler = (event: any) => {
+      if (!event) {
+        const data = JSON.parse(event.data);
+        console.log("Hello", data);
+      }
+    };
+
+    window.addEventListener("message", handler);
+
+    // clean up
+    return () => window.removeEventListener("message", handler);
+  }, []); // empty array => run only once */
 
   return (
     <div className={styles.main} style={{ padding: 0 }}>
@@ -18,8 +36,26 @@ export default function Home() {
         >
           Open KYC provider
         </button>
-        {showFrame ? <iframe src="." height="500px"></iframe> : ""}
+        <div>
+          Received signature{" "}
+          <input type="text" value={receivedSignature}></input>
+        </div>
+        {/*    {showFrame ? <iframe src="." height="500px"></iframe> : ""} */}
+        <IFrame>
+          <Home></Home>
+        </IFrame>
       </div>
     </div>
+  );
+}
+
+function IFrame({ children }: { children: React.ReactNode }) {
+  const [ref, setRef] = useState<HTMLIFrameElement | null>(null);
+  const container = ref?.contentWindow?.document?.body;
+
+  return (
+    <iframe ref={(node) => setRef(node)}>
+      {container && createPortal(children, container)}
+    </iframe>
   );
 }

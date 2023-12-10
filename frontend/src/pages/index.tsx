@@ -139,10 +139,25 @@ export default function Home() {
     // Update the formData object
     formData.append("src", uploadFile, uploadFile.name);
 
-    await fetch("/api/kycProvider", {
+    const response = await fetch("/api/kycProvider", {
       method: "POST",
       body: formData,
     });
+
+    let responseJSON = await response.json();
+    let signedAgeData = responseJSON as SignedAgeData;
+
+    //setReceivedSignature(responseJSON);
+    /*     console.log("sending up", window);
+    if (!window) {
+      (window as Window).top!.postMessage(
+        JSON.stringify({
+          error: false,
+          message: "Hello World",
+        }),
+        "*"
+      );
+    } */
 
     /*  await fetchAccount({
       publicKey: zkappPublicKey,
@@ -207,23 +222,18 @@ export default function Home() {
   // if (state.hasBeenSetup && state.accountExists) {
   mainContent = (
     <div style={{ justifyContent: "center", alignItems: "center" }}>
-      {/*   <div className={styles.center} style={{ padding: 0 }}>
-          Current state in zkApp: {state.currentNum!.toString()}{" "}
-        </div> */}
-      <button
+      {/*       <button
         className={styles.card}
         onClick={deploy}
-        /* disabled={state.creatingTransaction} */
       >
         In-project deploy
-      </button>
-      <button
+      </button> */}
+      {/*      <button
         className={styles.card}
         onClick={onSendTransaction}
-        /*  disabled={state.creatingTransaction} */
       >
         Send Transaction
-      </button>
+      </button> */}
       <button className={styles.card} onClick={submitDoc}>
         Submit doc
       </button>

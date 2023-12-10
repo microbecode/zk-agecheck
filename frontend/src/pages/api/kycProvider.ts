@@ -59,8 +59,8 @@ const handler = async (
     // console.log("got req", req);
     const { fields, files } = await parseForm(req);
 
-    const fileKey = Object.keys(files)[0]; // Get the first key
-    const fileArray = files[fileKey] as formidable.File[]; // Cast to array of formidable.File
+    const fileKey = Object.keys(files)[0];
+    const fileArray = files[fileKey] as formidable.File[];
     if (fileArray && fileArray.length > 0 && fileArray[0].filepath) {
       const fileContents = await fs.readFile(fileArray[0].filepath, "utf-8");
       console.log("Found age", fileContents);
