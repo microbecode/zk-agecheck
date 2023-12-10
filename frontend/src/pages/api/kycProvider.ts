@@ -3,13 +3,10 @@ import { SignedAgeData } from "@/types";
 import { error } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Field, PrivateKey, Signature } from "o1js";
-import { NextRequest, NextResponse } from "next/server";
 import * as formidable from "formidable";
-import mime from "mime";
 import { join } from "path";
 import * as dateFn from "date-fns";
-import { mkdir, stat } from "fs/promises";
-import fs from "fs";
+import fs from "fs/promises";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -35,10 +32,10 @@ export const parseForm = (
       }
 
       try {
-        await fs.promises.stat(uploadDir);
+        await fs.stat(uploadDir);
       } catch (e: any) {
         if (e.code === "ENOENT") {
-          await fs.promises.mkdir(uploadDir, { recursive: true });
+          await fs.mkdir(uploadDir, { recursive: true });
         } else {
           console.error(e);
           reject(e);
@@ -57,11 +54,20 @@ const handler = async (
   req: ExtendedNextApiRequest,
   res: NextApiResponse<SignedAgeData>
 ) => {
+  let kycAge: number = 0;
   try {
     // console.log("got req", req);
     const { fields, files } = await parseForm(req);
 
-    console.log("DATAAAA", files);
+    const fileKey = Object.keys(files)[0]; // Get the first key
+    const fileArray = files[fileKey] as formidable.File[]; // Cast to array of formidable.File
+    if (fileArray && fileArray.length > 0 && fileArray[0].filepath) {
+      const fileContents = await fs.readFile(fileArray[0].filepath, "utf-8");
+      console.log("Found age", fileContents);
+      kycAge = +fileContents;
+    }
+
+    //console.log("DATAAAA", files);
   } catch (e) {
     console.error(e);
   }
@@ -76,7 +82,7 @@ const handler = async (
   //console.log("got req", req);
 
   const idStr = 1; //req.body.id;
-  const ageNum = 78; // FIXME: should probably get the data from somewhere
+  const ageNum = kycAge;
 
   const id = Field(idStr);
   const age = Field(ageNum);
