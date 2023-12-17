@@ -48,6 +48,7 @@ export const parseForm = (
   });
 };
 
+// Skips automatic body parsing. Required for formidable.
 export const config = { api: { bodyParser: false } };
 
 const handler = async (

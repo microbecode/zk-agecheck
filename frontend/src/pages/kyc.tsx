@@ -154,16 +154,6 @@ export default function KYC({ setSig }: Props) {
     setSig(responseJSON);
 
     //setReceivedSignature(responseJSON);
-    /*     console.log("sending up", window);
-    if (!window) {
-      (window as Window).top!.postMessage(
-        JSON.stringify({
-          error: false,
-          message: "Hello World",
-        }),
-        "*"
-      );
-    } */
 
     /*  await fetchAccount({
       publicKey: zkappPublicKey,
