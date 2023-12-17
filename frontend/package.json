@@ -31,6 +31,6 @@
     "encoding": "^0.1.13"
   },
   "peerDependencies": {
-    "o1js": "^0.14.1"
+    "o1js": "^0.15.0"
   }
 }
