@@ -153,20 +153,6 @@ export default function KYC({ setSig }: Props) {
     console.log("got json", responseJSON);
     setSig(signedAgeData);
 
-    //////////
-
-    //setReceivedSignature(responseJSON);
-
-    /*  await fetchAccount({
-      publicKey: zkappPublicKey,
-    }); */
-
-    /*  await state.zkappWorkerClient!.fetchAccount({
-      publicKey: state.zkappPublicKey!,
-    }); */
-    /*     const currentNum = await state.zkappWorkerClient!.getNum();
-    setState({ ...state, currentNum });
-    console.log(`Current state in zkApp: ${currentNum.toString()}`); */
     setDisplayText("");
   };
 
