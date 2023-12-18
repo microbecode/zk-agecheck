@@ -20,7 +20,7 @@ declare global {
 }
 
 interface Props {
-  setSig: (str: string) => void;
+  setSig: (ageData: SignedAgeData) => void;
 }
 
 export default function KYC({ setSig }: Props) {
@@ -151,7 +151,9 @@ export default function KYC({ setSig }: Props) {
     let responseJSON = await response.json();
     let signedAgeData = responseJSON as SignedAgeData;
     console.log("got json", responseJSON);
-    setSig(responseJSON);
+    setSig(signedAgeData);
+
+    //////////
 
     //setReceivedSignature(responseJSON);
 
