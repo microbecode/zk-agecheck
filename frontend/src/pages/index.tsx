@@ -6,6 +6,7 @@ import React from "react";
 import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
+import { AgeCheck } from "@/components/deployer";
 
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -22,10 +23,14 @@ export default function Enter() {
   const startStuff = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
 
-    const { AgeCheck } = await import("../components/deployer");
+    /*     const { AgeCheck } = await import("../components/deployer");
 
     console.log("compiling app");
 
+    const verificationKey = await AgeCheck.compile();
+    
+     
+     */
     const verificationKey = await AgeCheck.compile();
     const vkJson = JSON.stringify(verificationKey);
 
@@ -66,8 +71,8 @@ export default function Enter() {
 
     const trimmedProof = proof.find((p) => p !== undefined);
     console.log("Proof", trimmedProof!.toJSON());
-    setProof(trimmedProof!.toJSON().proof);
     console.log("Verification key", vkJson);
+    setProof(trimmedProof!.toJSON().proof);
   };
 
   /*   useEffect(() => {
@@ -109,6 +114,7 @@ export default function Enter() {
   );
 }
 
+// https://dev.to/graftini/rendering-in-an-iframe-in-a-react-app-2boa
 function IFrame({ children }: { children: React.ReactNode }) {
   const [ref, setRef] = useState<HTMLIFrameElement | null>(null);
   const container = ref?.contentWindow?.document?.body;
