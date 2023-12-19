@@ -23,14 +23,6 @@ export default function Enter() {
   const startStuff = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
 
-    /*     const { AgeCheck } = await import("../components/deployer");
-
-    console.log("compiling app");
-
-    const verificationKey = await AgeCheck.compile();
-    
-     
-     */
     const verificationKey = await AgeCheck.compile();
     const vkJson = JSON.stringify(verificationKey);
 
@@ -74,20 +66,6 @@ export default function Enter() {
     console.log("Verification key", vkJson);
     setProof(trimmedProof!.toJSON().proof);
   };
-
-  /*   useEffect(() => {
-    const handler = (event: any) => {
-      if (!event) {
-        const data = JSON.parse(event.data);
-        console.log("Hello", data);
-      }
-    };
-
-    window.addEventListener("message", handler);
-
-    // clean up
-    return () => window.removeEventListener("message", handler);
-  }, []); // empty array => run only once */
 
   return (
     <div className={styles.main} style={{ padding: 0 }}>
