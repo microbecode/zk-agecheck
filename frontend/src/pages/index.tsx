@@ -20,7 +20,7 @@ export default function Enter() {
   const [receivedSignature, setReceivedSignature] = useState<string>();
   const [proof, setProof] = useState<string>();
 
-  const startStuff = async (ageData: SignedAgeData) => {
+  const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
 
     const verificationKey = await AgeCheck.compile();
@@ -82,11 +82,13 @@ export default function Enter() {
           Received signature: <p>{JSON.stringify(receivedSignature)}</p>
         </div>
         <div>
-          Proof: <p>{proof}</p>
+          Generated proof: <p>{proof}</p>
         </div>
-        <IFrame>
-          <KYC setSig={startStuff} />
-        </IFrame>
+        {showFrame && (
+          <IFrame>
+            <KYC setSig={setAgeData} />
+          </IFrame>
+        )}
       </div>
     </div>
   );

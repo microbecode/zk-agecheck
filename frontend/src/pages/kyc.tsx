@@ -229,10 +229,10 @@ export default function KYC({ setSig }: Props) {
   return (
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
+        Welcome to your KYC provider!
         {setup}
         {/*   {accountDoesNotExist} */}
         {mainContent}
-        HALLO
       </div>
     </div>
   );
