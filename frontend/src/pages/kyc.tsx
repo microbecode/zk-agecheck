@@ -170,24 +170,6 @@ export default function KYC({ setSig }: Props) {
     hasWallet = <div>Could not find a wallet. {auroLinkElem}</div>; 
   }*/
 
-  const stepDisplay = transactionlink ? (
-    <a href={displayText} target="_blank" rel="noreferrer">
-      View transaction
-    </a>
-  ) : (
-    displayText
-  );
-
-  let setup = (
-    <div
-      className={styles.start}
-      style={{ fontWeight: "bold", fontSize: "1.5rem", paddingBottom: "5rem" }}
-    >
-      {stepDisplay}
-      {/* {hasWallet} */}
-    </div>
-  );
-
   /*   let accountDoesNotExist;
   if (state.hasBeenSetup && !state.accountExists) {
     const faucetLink =
@@ -230,7 +212,6 @@ export default function KYC({ setSig }: Props) {
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
         Welcome to your KYC provider!
-        {setup}
         {/*   {accountDoesNotExist} */}
         {mainContent}
       </div>

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import "../components/reactCOIServiceWorker";
-import { PublicKey, Field, Mina, fetchAccount, Signature } from "o1js";
+import {
+  PublicKey,
+  Field,
+  Mina,
+  fetchAccount,
+  Signature,
+  JsonProof,
+} from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
 import { createPortal } from "react-dom";
@@ -18,10 +25,11 @@ export default function Enter() {
   const [showFrame, setShowFrame] = useState(false);
 
   const [receivedSignature, setReceivedSignature] = useState<string>();
-  const [proof, setProof] = useState<string>();
+  const [proof, setProof] = useState<JsonProof>();
 
   const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
+    setShowFrame(false);
 
     const verificationKey = await AgeCheck.compile();
     const vkJson = JSON.stringify(verificationKey);
@@ -64,8 +72,10 @@ export default function Enter() {
     const trimmedProof = proof.find((p) => p !== undefined);
     console.log("Proof", trimmedProof!.toJSON());
     console.log("Verification key", vkJson);
-    setProof(trimmedProof!.toJSON().proof);
+    setProof(trimmedProof!.toJSON());
   };
+
+  const verify = () => {};
 
   return (
     <div className={styles.main} style={{ padding: 0 }}>
@@ -82,7 +92,9 @@ export default function Enter() {
           Received signature: <p>{JSON.stringify(receivedSignature)}</p>
         </div>
         <div>
-          Generated proof: <p>{proof}</p>
+          Generated proof:
+          <input type="text" disabled={true} value={proof?.proof} />
+          <button onClick={verify}>Verify</button>
         </div>
         {showFrame && (
           <IFrame>
