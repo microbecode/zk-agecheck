@@ -75,7 +75,9 @@ export default function Enter() {
     setProof(trimmedProof!.toJSON());
   };
 
-  const verify = () => {};
+  const verify = () => {
+    // TODO
+  };
 
   return (
     <div className={styles.main} style={{ padding: 0 }}>
@@ -93,7 +95,7 @@ export default function Enter() {
         </div>
         <div>
           Generated proof:
-          <input type="text" disabled={true} value={proof?.proof} />
+          <p>{proof?.proof}</p>
           <button onClick={verify}>Verify</button>
         </div>
         {showFrame && (
