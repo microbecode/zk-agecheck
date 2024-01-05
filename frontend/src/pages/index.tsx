@@ -79,9 +79,9 @@ export default function Enter() {
     setProof(trimmedProof!.toJSON());
   };
 
-  const verifyProof = () => {
+  const verifyProof = async () => {
     if (proof && verificationKey) {
-      const res = verify(proof, verificationKey);
+      const res = await verify(proof, verificationKey);
       console.log("is verified", res);
       // forward to the real website
     }
@@ -101,11 +101,17 @@ export default function Enter() {
         <div>
           Received signature: <p>{JSON.stringify(receivedSignature)}</p>
         </div>
-        <div>
-          Generated proof:
-          <p>{proof?.proof}</p>
-          <button onClick={verifyProof}>Submit proof</button>
-        </div>
+        {proof ? (
+          <div>
+            <div>
+              Generated proof:
+              <p>{proof?.proof.substring(0, 10) + "..."}</p>
+            </div>
+            <button onClick={verifyProof}>Submit proof</button>
+          </div>
+        ) : (
+          ""
+        )}
         {showFrame && (
           <IFrame>
             <KYC setSig={setAgeData} />
