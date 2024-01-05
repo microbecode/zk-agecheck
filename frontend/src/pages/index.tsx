@@ -7,6 +7,7 @@ import {
   fetchAccount,
   Signature,
   JsonProof,
+  verify,
 } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
@@ -26,12 +27,14 @@ export default function Enter() {
 
   const [receivedSignature, setReceivedSignature] = useState<string>();
   const [proof, setProof] = useState<JsonProof>();
+  const [verificationKey, setVerificationKey] = useState<string>();
 
   const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
     setShowFrame(false);
 
     const verificationKey = await AgeCheck.compile();
+    setVerificationKey(verificationKey.verificationKey.data);
     const vkJson = JSON.stringify(verificationKey);
 
     const network = Mina.Network({
@@ -70,13 +73,18 @@ export default function Enter() {
     const proof = await transaction.prove();
 
     const trimmedProof = proof.find((p) => p !== undefined);
+
     console.log("Proof", trimmedProof!.toJSON());
     console.log("Verification key", vkJson);
     setProof(trimmedProof!.toJSON());
   };
 
-  const verify = () => {
-    // TODO
+  const verifyProof = () => {
+    if (proof && verificationKey) {
+      const res = verify(proof, verificationKey);
+      console.log("is verified", res);
+      // forward to the real website
+    }
   };
 
   return (
@@ -96,7 +104,7 @@ export default function Enter() {
         <div>
           Generated proof:
           <p>{proof?.proof}</p>
-          <button onClick={verify}>Verify</button>
+          <button onClick={verifyProof}>Submit proof</button>
         </div>
         {showFrame && (
           <IFrame>
