@@ -15,6 +15,7 @@ import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
 import { AgeCheck } from "@/components/deployer";
+import { set } from "date-fns";
 
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -22,16 +23,23 @@ const zkappPublicKey = PublicKey.fromBase58(
   "B62qjScikFVx1CeVRazFkcaSvkDfy8igZyMxQgmPQGbjHTmmcQFkEgP"
 );
 
-export default function Enter() {
-  const [showFrame, setShowFrame] = useState(false);
+enum ProofState {
+  START,
+  AT_KYC,
+  SIG_RECEIVED,
+  PROOF_GENERATED,
+  PROOF_VERIFYING,
+}
 
+export default function Enter() {
   const [receivedSignature, setReceivedSignature] = useState<string>();
   const [proof, setProof] = useState<JsonProof>();
   const [verificationKey, setVerificationKey] = useState<string>();
+  const [proofState, setProofState] = useState<ProofState>(ProofState.START);
 
   const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
-    setShowFrame(false);
+    setProofState(ProofState.SIG_RECEIVED);
 
     const verificationKey = await AgeCheck.compile();
     setVerificationKey(verificationKey.verificationKey.data);
@@ -74,6 +82,8 @@ export default function Enter() {
 
     const trimmedProof = proof.find((p) => p !== undefined);
 
+    setProofState(ProofState.PROOF_GENERATED);
+
     console.log("Proof", trimmedProof!.toJSON());
     console.log("Verification key", vkJson);
     setProof(trimmedProof!.toJSON());
@@ -81,6 +91,7 @@ export default function Enter() {
 
   const verifyProof = async () => {
     if (proof && verificationKey) {
+      setProofState(ProofState.PROOF_VERIFYING);
       const res = await verify(proof, verificationKey);
       console.log("is verified", res);
       if (res) {
@@ -94,31 +105,45 @@ export default function Enter() {
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
         You must be over 18 years old to enter!
-        <button
-          onClick={() => {
-            setShowFrame(true);
-          }}
-        >
-          Open KYC provider
-        </button>
-        <div>
-          Received signature: <p>{JSON.stringify(receivedSignature)}</p>
-        </div>
-        {proof ? (
+        {proofState == ProofState.START ? (
+          <button
+            onClick={() => {
+              setProofState(ProofState.AT_KYC);
+            }}
+          >
+            Open KYC provider
+          </button>
+        ) : (
+          ""
+        )}
+        {proofState == ProofState.AT_KYC && (
+          <IFrame>
+            <KYC setSig={setAgeData} />
+          </IFrame>
+        )}
+        {proofState == ProofState.SIG_RECEIVED ? (
+          <div>
+            Received signature: <p>{JSON.stringify(receivedSignature)}</p>
+            <p>Generating proof... This takes a minute or two.</p>
+          </div>
+        ) : (
+          ""
+        )}
+        {proofState == ProofState.PROOF_GENERATED ? (
           <div>
             <div>
               Generated proof:
-              <p>{proof?.proof.substring(0, 10) + "..."}</p>
+              {proof?.proof.substring(0, 10) + "..."}
             </div>
             <button onClick={verifyProof}>Submit proof</button>
           </div>
         ) : (
           ""
         )}
-        {showFrame && (
-          <IFrame>
-            <KYC setSig={setAgeData} />
-          </IFrame>
+        {proofState == ProofState.PROOF_VERIFYING ? (
+          <div>Verifying proof...</div>
+        ) : (
+          ""
         )}
       </div>
     </div>

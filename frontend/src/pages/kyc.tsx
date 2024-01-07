@@ -200,10 +200,11 @@ export default function KYC({ setSig }: Props) {
       >
         Send Transaction
       </button> */}
+
+      <input type="file" onChange={onFileChange} />
       <button className={styles.card} onClick={submitDoc}>
         Submit doc
       </button>
-      <input type="file" onChange={onFileChange} />
     </div>
   );
   // }
