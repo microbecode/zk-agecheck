@@ -4,9 +4,7 @@ import { error } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Field, PrivateKey, Signature } from "o1js";
 import * as formidable from "formidable";
-import { join } from "path";
-import * as dateFn from "date-fns";
-import fs from "fs/promises";
+import fs from "fs";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -14,15 +12,14 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   };
 }
 
+// Skips automatic body parsing. Required for formidable.
+export const config = { api: { bodyParser: false } };
+
 export const parseForm = (
   req: NextApiRequest
-): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
+): Promise<{ fields: formidable.Fields; fileContents: Buffer }> => {
   return new Promise((resolve, reject) => {
     const form = new formidable.IncomingForm();
-    const uploadDir = join(
-      process.env.ROOT_DIR || process.cwd(),
-      `/uploads/${dateFn.format(Date.now(), "dd-MM-Y")}`
-    );
 
     form.parse(req, async (err, fields, files) => {
       if (err) {
@@ -31,25 +28,41 @@ export const parseForm = (
         return;
       }
 
-      try {
-        await fs.stat(uploadDir);
-      } catch (e: any) {
-        if (e.code === "ENOENT") {
-          await fs.mkdir(uploadDir, { recursive: true });
-        } else {
-          console.error(e);
-          reject(e);
-          return;
-        }
-      }
+      // Access the file details from the 'files' object
+      const file = (files as any).src[0]; // Assuming 'src' is the field name for your file input
 
-      resolve({ fields, files });
+      // Read the file contents from the temporary filepath
+      try {
+        const fileContents = await readFileContents(file.filepath);
+        resolve({ fields, fileContents });
+      } catch (e) {
+        console.error("Error reading file contents:", e);
+        reject(e);
+      }
     });
   });
 };
 
-// Skips automatic body parsing. Required for formidable.
-export const config = { api: { bodyParser: false } };
+const readFileContents = (filePath: string): Promise<Buffer> => {
+  return new Promise((resolve, reject) => {
+    const chunks: any[] = [];
+
+    const readStream = fs.createReadStream(filePath);
+
+    readStream.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+
+    readStream.on("end", () => {
+      const fileContents = Buffer.concat(chunks);
+      resolve(fileContents);
+    });
+
+    readStream.on("error", (error) => {
+      reject(error);
+    });
+  });
+};
 
 const handler = async (
   req: ExtendedNextApiRequest,
@@ -58,17 +71,10 @@ const handler = async (
   let kycAge: number = 0;
   try {
     // console.log("got req", req);
-    const { fields, files } = await parseForm(req);
-
-    const fileKey = Object.keys(files)[0];
-    const fileArray = files[fileKey] as formidable.File[];
-    if (fileArray && fileArray.length > 0 && fileArray[0].filepath) {
-      const fileContents = await fs.readFile(fileArray[0].filepath, "utf-8");
-      console.log("Found age", fileContents);
-      kycAge = +fileContents;
-    }
-
-    //console.log("DATAAAA", files);
+    const { fields, fileContents } = await parseForm(req);
+    console.log("fileContents", fileContents.toString("utf8"));
+    kycAge = +fileContents.toString("utf8");
+    console.log("Found age", kycAge);
   } catch (e) {
     console.error(e);
   }
