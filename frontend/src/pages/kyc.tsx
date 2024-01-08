@@ -1,5 +1,4 @@
 import { ChangeEvent, ReactHTML, useEffect, useState } from "react";
-import "../components/reactCOIServiceWorker";
 import { PublicKey, Field, Mina, fetchAccount, Signature } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
