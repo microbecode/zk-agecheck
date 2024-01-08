@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "../components/reactCOIServiceWorker";
 import {
   PublicKey,
   Field,
@@ -15,7 +14,6 @@ import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
 import { AgeCheck } from "@/components/deployer";
-import { set } from "date-fns";
 
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
