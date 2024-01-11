@@ -93,9 +93,9 @@ export default function Enter() {
       const res = await verify(proof, verificationKey);
       console.log("is verified", res);
       if (res) {
+        // forward to the real website
         window.location.href = "website";
       }
-      // forward to the real website
     }
   };
 
