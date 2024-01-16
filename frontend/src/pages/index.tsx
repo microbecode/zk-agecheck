@@ -102,14 +102,15 @@ export default function Enter() {
   return (
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
-        You must be over 18 years old to enter!
+        <p>You must be over 18 years old to enter! </p>
+        <p>Use a KYC provider to prove your age securely.</p>
         {proofState == ProofState.START ? (
           <button
             onClick={() => {
               setProofState(ProofState.AT_KYC);
             }}
           >
-            Open KYC provider
+            Open provider
           </button>
         ) : (
           ""
@@ -122,7 +123,7 @@ export default function Enter() {
         {proofState == ProofState.SIG_RECEIVED ? (
           <div>
             Received signature: <p>{JSON.stringify(receivedSignature)}</p>
-            <p>Generating proof... This takes a minute or two.</p>
+            <p>Generating proof... This takes a minute or two. Please wait.</p>
           </div>
         ) : (
           ""

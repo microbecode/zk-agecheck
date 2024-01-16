@@ -41,11 +41,12 @@ export default function KYC({ setSig }: Props) {
   return (
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
-        Welcome to your KYC provider!
+        <p>Welcome to your KYC provider!</p>
+        <p>Please provide your ID document:</p>
         <div style={{ justifyContent: "center", alignItems: "center" }}>
           <input type="file" onChange={onFileChange} />
           <button className={styles.card} onClick={submitDoc}>
-            Submit doc
+            Submit file
           </button>
         </div>
       </div>
