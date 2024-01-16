@@ -65,26 +65,32 @@ export default function Enter() {
     const zkApp = new AgeCheck(zkappPublicKey);
     console.log("creating tx");
 
-    const transaction = await Mina.transaction(() => {
+    const transaction = await Mina.transaction(async () => {
       zkApp.verify(
         Field(ageData.id),
         Field(ageData.age),
         Signature.fromBase58(ageData.sig)
       );
     });
+    console.log("tx", transaction);
 
     console.log("Prettified", transaction.toPretty());
 
     console.log("Creating proof...");
-    const proof = await transaction.prove();
+    try {
+      const proof = await transaction.prove();
 
-    const trimmedProof = proof.find((p) => p !== undefined);
+      const trimmedProof = proof.find((p) => p !== undefined);
 
-    setProofState(ProofState.PROOF_GENERATED);
+      setProofState(ProofState.PROOF_GENERATED);
 
-    console.log("Proof", trimmedProof!.toJSON());
-    console.log("Verification key", vkJson);
-    setProof(trimmedProof!.toJSON());
+      console.log("Proof", trimmedProof!.toJSON());
+      console.log("Verification key", vkJson);
+      setProof(trimmedProof!.toJSON());
+    } catch (e) {
+      console.log("got error", e);
+      return;
+    }
   };
 
   const verifyProof = async () => {
