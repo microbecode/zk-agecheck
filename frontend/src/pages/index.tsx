@@ -27,6 +27,7 @@ enum ProofState {
   SIG_RECEIVED,
   PROOF_GENERATED,
   PROOF_VERIFYING,
+  ERROR,
 }
 
 export default function Enter() {
@@ -34,14 +35,11 @@ export default function Enter() {
   const [proof, setProof] = useState<JsonProof>();
   const [verificationKey, setVerificationKey] = useState<string>();
   const [proofState, setProofState] = useState<ProofState>(ProofState.START);
+  const [errorText, setErrorText] = useState<string>("");
 
   const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
     setProofState(ProofState.SIG_RECEIVED);
-
-    const verificationKey = await AgeCheck.compile();
-    setVerificationKey(verificationKey.verificationKey.data);
-    const vkJson = JSON.stringify(verificationKey);
 
     const network = Mina.Network({
       mina: TESTNET,
@@ -63,6 +61,13 @@ export default function Enter() {
     await fetchAccount({ publicKey: zkappPublicKey });
 
     const zkApp = new AgeCheck(zkappPublicKey);
+    const minAge = await zkApp.minimumAge.get();
+    console.log("minage and zkappminage", minAge.toBigInt(), ageData.age);
+    if (minAge.toBigInt() > ageData.age) {
+      setProofState(ProofState.ERROR);
+      setErrorText(`Minimum age is ${minAge}`);
+      return;
+    }
     console.log("creating tx");
 
     const transaction = await Mina.transaction(async () => {
@@ -77,6 +82,9 @@ export default function Enter() {
     console.log("Prettified", transaction.toPretty());
 
     console.log("Creating proof...");
+    const verificationKey = await AgeCheck.compile();
+    setVerificationKey(verificationKey.verificationKey.data);
+    const vkJson = JSON.stringify(verificationKey);
     try {
       const proof = await transaction.prove();
 
@@ -109,8 +117,10 @@ export default function Enter() {
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
         <p>You must be over 18 years old to enter! </p>
-        <p>Use a KYC provider to prove your age securely.</p>
-        {proofState == ProofState.START ? (
+        {proofState != ProofState.ERROR && (
+          <p>Use a KYC provider to prove your age securely.</p>
+        )}
+        {proofState == ProofState.START && (
           <button
             onClick={() => {
               setProofState(ProofState.AT_KYC);
@@ -118,23 +128,19 @@ export default function Enter() {
           >
             Open provider
           </button>
-        ) : (
-          ""
         )}
         {proofState == ProofState.AT_KYC && (
           <IFrame>
             <KYC setSig={setAgeData} />
           </IFrame>
         )}
-        {proofState == ProofState.SIG_RECEIVED ? (
+        {proofState == ProofState.SIG_RECEIVED && (
           <div>
             Received signature: <p>{JSON.stringify(receivedSignature)}</p>
             <p>Generating proof... This takes a minute or two. Please wait.</p>
           </div>
-        ) : (
-          ""
         )}
-        {proofState == ProofState.PROOF_GENERATED ? (
+        {proofState == ProofState.PROOF_GENERATED && (
           <div>
             <div>
               Generated proof:
@@ -142,13 +148,12 @@ export default function Enter() {
             </div>
             <button onClick={verifyProof}>Submit proof</button>
           </div>
-        ) : (
-          ""
         )}
-        {proofState == ProofState.PROOF_VERIFYING ? (
+        {proofState == ProofState.PROOF_VERIFYING && (
           <div>Verifying proof...</div>
-        ) : (
-          ""
+        )}
+        {proofState == ProofState.ERROR && errorText && (
+          <div>Error: {errorText}</div>
         )}
       </div>
     </div>
