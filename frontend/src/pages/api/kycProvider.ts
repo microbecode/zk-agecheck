@@ -70,11 +70,8 @@ const handler = async (
 ) => {
   let kycAge: number = 0;
   try {
-    // console.log("got req", req);
-    const { fields, fileContents } = await parseForm(req);
-    console.log("fileContents", fileContents.toString("utf8"));
+    const { fileContents } = await parseForm(req);
     kycAge = +fileContents.toString("utf8");
-    console.log("Found age", kycAge);
   } catch (e) {
     console.error(e);
   }

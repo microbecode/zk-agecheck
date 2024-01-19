@@ -14,7 +14,9 @@ export default function KYC() {
   return (
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
-        Welcome to a restricted website!
+        <div> Welcome to a restricted website!</div>
+        <img src="/assets/tits.jpg" />
+        <i>A pair of great tits</i>
       </div>
     </div>
   );
