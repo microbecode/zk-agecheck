@@ -122,6 +122,7 @@ export default function Enter() {
         )}
         {proofState == ProofState.START && (
           <button
+            className={styles.button}
             onClick={() => {
               setProofState(ProofState.AT_KYC);
             }}
@@ -146,7 +147,9 @@ export default function Enter() {
               Generated proof:
               {proof?.proof.substring(0, 10) + "..."}
             </div>
-            <button onClick={verifyProof}>Submit proof</button>
+            <button className={styles.button} onClick={verifyProof}>
+              Submit proof
+            </button>
           </div>
         )}
         {proofState == ProofState.PROOF_VERIFYING && (
@@ -166,7 +169,7 @@ function IFrame({ children }: { children: React.ReactNode }) {
   const container = ref?.contentWindow?.document?.body;
 
   return (
-    <iframe ref={(node) => setRef(node)}>
+    <iframe ref={(node) => setRef(node)} className={styles.kyc}>
       {container && createPortal(children, container)}
     </iframe>
   );
