@@ -1,4 +1,4 @@
-import { Field, Signature, ZkProgram, verify } from "o1js";
+import { Field, PublicKey, Signature, ZkProgram, verify } from "o1js";
 
 // https://github.com/o1-labs/o1js/blob/5ca43684e98af3e4f348f7b035a0ad7320d88f3d/src/examples/zkprogram/program-with-input.ts
 
@@ -8,29 +8,22 @@ let zkProgram = ZkProgram({
 
   methods: {
     verify: {
-      privateInputs: [Field, Field, Field, Field, Signature],
+      privateInputs: [Field, PublicKey, Field, Field, Signature],
       method(
-        ageRequired: Field,
-        oraclePublicKey: Field,
+        minimumAge: Field,
+        oraclePublicKey: PublicKey,
         id: Field,
         age: Field,
         signature: Signature
-      ) {},
-    },
-    /* baseCase: {
-        privateInputs: [],
-        method(input: Field) {
-          input.assertEquals(Field(0));
-        },
+      ) {
+        // Evaluate whether the signature is valid for the provided data
+        const validSignature = signature.verify(oraclePublicKey, [id, age]);
+        // Check that the signature is valid
+        validSignature.assertTrue();
+        // Check that the provided age is above the minimum age
+        age.assertGreaterThanOrEqual(minimumAge);
       },
-  
-      inductiveCase: {
-        privateInputs: [SelfProof],
-        method(input: Field, earlierProof: SelfProof<Field, void>) {
-          earlierProof.verify();
-          earlierProof.publicInput.add(1).assertEquals(input);
-        },
-      }, */
+    },
   },
 });
 
@@ -52,3 +45,4 @@ console.log("Public inputs", proof.publicInput.value);
 console.log("Verified successfully:", proofValid);
 
 export { MyProgram }; */
+export { zkProgram };

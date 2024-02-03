@@ -14,6 +14,7 @@ import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
 import { AgeCheck } from "@/components/deployer";
+import { zkProgram } from "@/components/zkProgram";
 
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -46,7 +47,7 @@ export default function Enter() {
     });
     Mina.setActiveInstance(network);
 
-    const mina = (window as any).mina;
+    /*  const mina = (window as any).mina;
 
     if (mina == null) {
       console.error("No Mina wallet");
@@ -58,8 +59,11 @@ export default function Enter() {
 
     console.log("Using wallet", publicKey);
 
-    await fetchAccount({ publicKey: zkappPublicKey });
+    await fetchAccount({ publicKey: zkappPublicKey }); */
 
+    const zkProg = zkProgram;
+    const verificationKey = await zkProg.compile();
+    /* 
     const zkApp = new AgeCheck(zkappPublicKey);
     const minAge = await zkApp.minimumAge.get();
     console.log("minage and zkappminage", minAge.toBigInt(), ageData.age);
@@ -98,7 +102,7 @@ export default function Enter() {
     } catch (e) {
       console.log("got error", e);
       return;
-    }
+    } */
   };
 
   const verifyProof = async () => {
