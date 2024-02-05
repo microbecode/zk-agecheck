@@ -16,6 +16,10 @@ import { SignedAgeData } from "@/types";
 import { AgeCheck } from "@/components/deployer";
 import { zkProgram } from "@/components/zkProgram";
 
+const ORACLE_PUBLIC_KEY =
+  "B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd";
+const MINIMUM_AGE = Field(18);
+
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
 const zkappPublicKey = PublicKey.fromBase58(
@@ -63,6 +67,17 @@ export default function Enter() {
 
     const zkProg = zkProgram;
     const verificationKey = await zkProg.compile();
+    console.log("compiled");
+
+    const res = await zkProg.verifyAge(
+      MINIMUM_AGE, // public
+      PublicKey.fromBase58(ORACLE_PUBLIC_KEY),
+      Field(ageData.id),
+      Field(ageData.age),
+      Signature.fromBase58(ageData.sig)
+    );
+
+    console.log("RES", res);
     /* 
     const zkApp = new AgeCheck(zkappPublicKey);
     const minAge = await zkApp.minimumAge.get();
