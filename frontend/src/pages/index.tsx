@@ -66,7 +66,8 @@ export default function Enter() {
     await fetchAccount({ publicKey: zkappPublicKey }); */
 
     const zkProg = zkProgram;
-    const verificationKey = await zkProg.compile();
+    const vkJson = await zkProg.compile();
+    setVerificationKey(vkJson.verificationKey.data);
     console.log("compiled");
 
     const res = await zkProg.verifyAge(
@@ -76,51 +77,18 @@ export default function Enter() {
       Field(ageData.age),
       Signature.fromBase58(ageData.sig)
     );
+    const proof = res.toJSON();
 
-    console.log("RES", res);
-    /* 
-    const zkApp = new AgeCheck(zkappPublicKey);
-    const minAge = await zkApp.minimumAge.get();
-    console.log("minage and zkappminage", minAge.toBigInt(), ageData.age);
-    if (minAge.toBigInt() > ageData.age) {
-      setProofState(ProofState.ERROR);
-      setErrorText(`Minimum age is ${minAge}`);
-      return;
-    }
-    console.log("creating tx");
+    console.log("RES", res, proof.proof);
 
-    const transaction = await Mina.transaction(async () => {
-      zkApp.verify(
-        Field(ageData.id),
-        Field(ageData.age),
-        Signature.fromBase58(ageData.sig)
-      );
-    });
-    console.log("tx", transaction);
+    setProofState(ProofState.PROOF_GENERATED);
 
-    console.log("Prettified", transaction.toPretty());
-
-    console.log("Creating proof...");
-    const verificationKey = await AgeCheck.compile();
-    setVerificationKey(verificationKey.verificationKey.data);
-    const vkJson = JSON.stringify(verificationKey);
-    try {
-      const proof = await transaction.prove();
-
-      const trimmedProof = proof.find((p) => p !== undefined);
-
-      setProofState(ProofState.PROOF_GENERATED);
-
-      console.log("Proof", trimmedProof!.toJSON());
-      console.log("Verification key", vkJson);
-      setProof(trimmedProof!.toJSON());
-    } catch (e) {
-      console.log("got error", e);
-      return;
-    } */
+    console.log("Verification key", vkJson);
+    setProof(proof);
   };
 
   const verifyProof = async () => {
+    console.log("start verify", proof, verificationKey);
     if (proof && verificationKey) {
       setProofState(ProofState.PROOF_VERIFYING);
       const res = await verify(proof, verificationKey);
