@@ -14,6 +14,11 @@ import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
 import { AgeCheck } from "@/components/deployer";
+import { zkProgram } from "@/components/zkProgram";
+
+const ORACLE_PUBLIC_KEY =
+  "B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd";
+const MINIMUM_AGE = Field(18);
 
 const transactionFee = 0.1;
 const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
@@ -46,7 +51,7 @@ export default function Enter() {
     });
     Mina.setActiveInstance(network);
 
-    const mina = (window as any).mina;
+    /*  const mina = (window as any).mina;
 
     if (mina == null) {
       console.error("No Mina wallet");
@@ -58,50 +63,32 @@ export default function Enter() {
 
     console.log("Using wallet", publicKey);
 
-    await fetchAccount({ publicKey: zkappPublicKey });
+    await fetchAccount({ publicKey: zkappPublicKey }); */
 
-    const zkApp = new AgeCheck(zkappPublicKey);
-    const minAge = await zkApp.minimumAge.get();
-    console.log("minage and zkappminage", minAge.toBigInt(), ageData.age);
-    if (minAge.toBigInt() > ageData.age) {
-      setProofState(ProofState.ERROR);
-      setErrorText(`Minimum age is ${minAge}`);
-      return;
-    }
-    console.log("creating tx");
+    const zkProg = zkProgram;
+    const vkJson = await zkProg.compile();
+    setVerificationKey(vkJson.verificationKey.data);
+    console.log("compiled");
 
-    const transaction = await Mina.transaction(async () => {
-      zkApp.verify(
-        Field(ageData.id),
-        Field(ageData.age),
-        Signature.fromBase58(ageData.sig)
-      );
-    });
-    console.log("tx", transaction);
+    const res = await zkProg.verifyAge(
+      MINIMUM_AGE, // public
+      PublicKey.fromBase58(ORACLE_PUBLIC_KEY),
+      Field(ageData.id),
+      Field(ageData.age),
+      Signature.fromBase58(ageData.sig)
+    );
+    const proof = res.toJSON();
 
-    console.log("Prettified", transaction.toPretty());
+    console.log("RES", res, proof.proof);
 
-    console.log("Creating proof...");
-    const verificationKey = await AgeCheck.compile();
-    setVerificationKey(verificationKey.verificationKey.data);
-    const vkJson = JSON.stringify(verificationKey);
-    try {
-      const proof = await transaction.prove();
+    setProofState(ProofState.PROOF_GENERATED);
 
-      const trimmedProof = proof.find((p) => p !== undefined);
-
-      setProofState(ProofState.PROOF_GENERATED);
-
-      console.log("Proof", trimmedProof!.toJSON());
-      console.log("Verification key", vkJson);
-      setProof(trimmedProof!.toJSON());
-    } catch (e) {
-      console.log("got error", e);
-      return;
-    }
+    console.log("Verification key", vkJson);
+    setProof(proof);
   };
 
   const verifyProof = async () => {
+    console.log("start verify", proof, verificationKey);
     if (proof && verificationKey) {
       setProofState(ProofState.PROOF_VERIFYING);
       const res = await verify(proof, verificationKey);
