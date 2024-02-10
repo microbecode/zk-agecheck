@@ -1,30 +1,15 @@
 import { useEffect, useState } from "react";
-import {
-  PublicKey,
-  Field,
-  Mina,
-  fetchAccount,
-  Signature,
-  JsonProof,
-  verify,
-} from "o1js";
+import { PublicKey, Field, Signature, JsonProof, verify } from "o1js";
 import styles from "../styles/Home.module.css";
 import React from "react";
 import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
-import { AgeCheck } from "@/components/deployer";
 import { zkProgram } from "@/components/zkProgram";
 
 const ORACLE_PUBLIC_KEY =
   "B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd";
 const MINIMUM_AGE = Field(18);
-
-const transactionFee = 0.1;
-const TESTNET = "https://proxy.testworld.minaexplorer.com/graphql";
-const zkappPublicKey = PublicKey.fromBase58(
-  "B62qjScikFVx1CeVRazFkcaSvkDfy8igZyMxQgmPQGbjHTmmcQFkEgP"
-);
 
 enum ProofState {
   START,
@@ -45,25 +30,6 @@ export default function Enter() {
   const setAgeData = async (ageData: SignedAgeData) => {
     setReceivedSignature(JSON.stringify(ageData));
     setProofState(ProofState.SIG_RECEIVED);
-
-    const network = Mina.Network({
-      mina: TESTNET,
-    });
-    Mina.setActiveInstance(network);
-
-    /*  const mina = (window as any).mina;
-
-    if (mina == null) {
-      console.error("No Mina wallet");
-      return;
-    }
-
-    const publicKeyBase58: string = (await mina.requestAccounts())[0];
-    const publicKey = PublicKey.fromBase58(publicKeyBase58);
-
-    console.log("Using wallet", publicKey);
-
-    await fetchAccount({ publicKey: zkappPublicKey }); */
 
     const zkProg = zkProgram;
     const vkJson = await zkProg.compile();
