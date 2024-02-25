@@ -15,7 +15,7 @@ export default function KYC() {
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
         <div> Welcome to a restricted website!</div>
-        <img src="/assets/tits.jpg" />
+        <img src="/assets/tits.jpg" style={{ margin: "5px" }} />
         <i>A pair of great tits</i>
       </div>
     </div>

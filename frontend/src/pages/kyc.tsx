@@ -45,7 +45,11 @@ export default function KYC({ setSig }: Props) {
         <p>Please provide your ID document:</p>
         <div style={{ justifyContent: "center", alignItems: "center" }}>
           <input type="file" onChange={onFileChange} />
-          <button className={styles.card} onClick={submitDoc}>
+          <button
+            className={styles.card}
+            onClick={submitDoc}
+            style={{ margin: "5px" }}
+          >
             Submit file
           </button>
         </div>

@@ -34,7 +34,6 @@ export default function Enter() {
     const zkProg = zkProgram;
     const vkJson = await zkProg.compile();
     setVerificationKey(vkJson.verificationKey.data);
-    console.log("compiled");
 
     const res = await zkProg.verifyAge(
       MINIMUM_AGE, // public
@@ -45,7 +44,7 @@ export default function Enter() {
     );
     const proof = res.toJSON();
 
-    console.log("RES", res, proof.proof);
+    console.log("Generated proof", res, proof.proof);
 
     setProofState(ProofState.PROOF_GENERATED);
 
@@ -54,14 +53,14 @@ export default function Enter() {
   };
 
   const verifyProof = async () => {
-    console.log("start verify", proof, verificationKey);
     if (proof && verificationKey) {
       setProofState(ProofState.PROOF_VERIFYING);
       const res = await verify(proof, verificationKey);
-      console.log("is verified", res);
       if (res) {
         // forward to the real website
         window.location.href = "website";
+      } else {
+        setErrorText("Verification failed");
       }
     }
   };
@@ -69,7 +68,7 @@ export default function Enter() {
   return (
     <div className={styles.main} style={{ padding: 0 }}>
       <div className={styles.center} style={{ padding: 0 }}>
-        <p>You must be over 18 years old to enter! </p>
+        <p>You must be over 18 years old to enter this site! </p>
         {proofState != ProofState.ERROR && (
           <p>Use a KYC provider to prove your age securely.</p>
         )}
@@ -90,8 +89,10 @@ export default function Enter() {
         )}
         {proofState == ProofState.SIG_RECEIVED && (
           <div>
-            Received signature: <p>{JSON.stringify(receivedSignature)}</p>
-            <p>Generating proof... This takes a minute or two. Please wait.</p>
+            <p>
+              Generating a proof based on the data from the identity provider...
+              This may take a minute or two. Please wait.
+            </p>
           </div>
         )}
         {proofState == ProofState.PROOF_GENERATED && (
