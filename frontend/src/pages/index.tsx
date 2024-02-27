@@ -6,11 +6,10 @@ import { createPortal } from "react-dom";
 import KYC from "./kyc";
 import { SignedAgeData } from "@/types";
 import { zkProgram } from "@/components/zkProgram";
-import RestrictedWebsite from "./website";
+import RestrictedWebsite, { MINIMUM_AGE } from "./website";
 
 const ORACLE_PUBLIC_KEY =
   "B62qkN4f1prDvFexmhGHNsNz1db84XCA6vkgtJpcAaqFJk2M1runpLd";
-const MINIMUM_AGE = 18;
 
 enum ProofState {
   START,
@@ -28,6 +27,11 @@ export default function Enter() {
   const [errorText, setErrorText] = useState<string>("");
 
   const setAgeData = async (ageData: SignedAgeData) => {
+    if (ageData.age < MINIMUM_AGE) {
+      setErrorText("Detected age is too low");
+      setProofState(ProofState.ERROR);
+      return;
+    }
     setProofState(ProofState.SIG_RECEIVED);
 
     const zkProg = zkProgram;
@@ -98,20 +102,7 @@ export default function Enter() {
                     Generated proof:
                     {proof.proof.substring(0, 10) + "..."}
                   </div>
-                  {/*   <Link
-                href={{
-                  pathname: "/website",
-                  query: {
-                    data: JSON.stringify({
-                      proof: proof,
-                      requiredAge: MINIMUM_AGE,
-                      verificationKey: verificationKey,
-                    }),
-                  },
-                }}
-              >
-                <a>Go to Other Page</a>
-              </Link> */}
+
                   <button
                     className={styles.button}
                     onClick={() => {
@@ -122,9 +113,6 @@ export default function Enter() {
                   </button>
                 </div>
               )}
-            {/*  {proofState == ProofState.PROOF_VERIFYING && (
-          <div>Verifying proof...</div>
-        )} */}
             {proofState == ProofState.ERROR && errorText && (
               <div>Error: {errorText}</div>
             )}
