@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ts-watch": "tsc --noEmit --incremental --watch",
-    "export": "next export",
-    "deploy": "next build && next export && touch out/.nojekyll  && git add -f out && git commit -m \"Deploy gh-pages\" && cd .. && git subtree push --prefix ui/out origin gh-pages"
+    "export": "next export"
   },
   "dependencies": {
     "@types/formidable": "^3.4.5",
@@ -22,6 +20,7 @@
     "eslint-config-next": "13.5.6",
     "formidable": "^3.5.1",
     "mime": "^4.0.0",
+    "mina-signer": "^3.0.4",
     "next": "13.5.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",

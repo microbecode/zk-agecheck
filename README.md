@@ -46,6 +46,24 @@ The overall process follows the following steps:
 1. The user can then submit this proof for the website for verification.
 1. The website verifies this proof against the claimed age. If the proof verifies the age, the website forward the user to the main website.
 
+## Example deployment
+
+The project is deployed at https://zk-agecheck.vercel.app/ .
+
+## Developer instructions
+
+The project utilizes Next.js. To run it locally:
+
+1. Generate a keypair: `ts-node keygen.ts`
+1. Add file _.env.local_ with content: `ORACLE_PRIVATE_KEY="GENERATED_PRIVATE_KEY"`
+1. Change the public key in variable `ORACLE_PUBLIC_KEY` in _index.tsx_
+1. Run `npm install`
+1. Run `npm run dev` and open your browser at http://localhost:3000/
+
+### Deployment
+
+You can deploy the project to any hosting service. The only special configuration you need to set is the oracle private key.
+
 ## License
 
 [Apache-2.0](LICENSE)

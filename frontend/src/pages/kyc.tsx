@@ -17,7 +17,6 @@ export default function KYC({ setSig }: Props) {
   };
 
   const submitDoc = async () => {
-    console.log("Getting zkApp state...");
     if (!uploadFile) {
       return;
     }
