@@ -1,10 +1,20 @@
 # ZK age check
 
-This project is for enabling functionality to check a user's age in a website, with Zero Knowledge technology. The project utilizes Mina ZK blockchain for generating ZK proofs and verifying them.
+This project is for enabling functionality to check a user's age in a website, with Zero Knowledge technology. The project utilizes o1js ZK library for generating ZK proofs and verifying them.
 
-This project is currently under heavy construction. A lot of the documented functionality is not there yet.
+This project is aimed to be used as a template, a proof of concept and educational material. It is not meant for production use.
 
-The current version is a Proof of Concept, which utilizes a Mina circuit for verifying signed data. No KYC provider is added yet.
+## Overview
+
+The project showcases how user's age verification can be performed for restricted websites. If a suitable KYC provider is used, this project's code can be utilized almost as-is for a real product.
+
+### Requirements for a KYC provider
+
+To utilize a real KYC provider with this project, the provider has to meet the following requirements:
+
+1. Have a simple UI that can be utilized through an _iframe_
+1. Return data in a specific format
+1. Sign the returned data using Schnorr signatures with specific elliptic curves
 
 ## Pieces of the puzzle
 
@@ -20,7 +30,7 @@ Later in the process the website asks the Mina circuit to verify a provided proo
 
 ### Mina blockchain
 
-A circuit (program) is written in the [o1js framework](https://github.com/o1-labs/o1js). The circuit does the following:
+A ZK program is written in the [o1js framework](https://github.com/o1-labs/o1js). The circuit does the following:
 
 1. Receive a signed message from a KYC provider. Verify the signature and generate a proof for the data
 1. Verify a received proof, along with the claimed data
@@ -43,8 +53,8 @@ The overall process follows the following steps:
 1. User performs steps required by the provider. In this project the steps are uploading your mock ID to the provider. The mock ID is a .txt file. The file should contain only the user's age and nothing else. (You can, for example, just save a file with text "50" in it and submit this).
 1. The KYC provider extracts the age information from the submitted document, creates a JSON message of it and signs it with their private key. The signed message is sent back to the user's browser, out of the iframe.
 1. The user's browser forwards this message to a Mina ZkProgram. The ZkProgram verifies that the signature is valid and provides a proof for it.
-1. The user can then submit this proof for the website for verification.
-1. The website verifies this proof against the claimed age. If the proof verifies the age, the website forward the user to the main website.
+1. The user can then submit this proof for the restricted website for verification.
+1. If the proof is valid, the user is displayed the restricted website
 
 ## Example deployment
 

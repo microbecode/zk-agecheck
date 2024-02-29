@@ -13,12 +13,15 @@ export const MINIMUM_AGE = 18;
 
 export default function RestrictedWebsite(props: Props) {
   const [isVerified, setIsVerified] = useState<boolean>();
+  const [error, setError] = useState<string>();
 
   const verifyProof = async () => {
     if (props.proof && props.verificationKey) {
       const res = await verify(props.proof, props.verificationKey);
       if (res) {
         setIsVerified(true);
+      } else {
+        setError("Unable to verify the proof");
       }
     }
   };
@@ -35,6 +38,7 @@ export default function RestrictedWebsite(props: Props) {
           </>
         )}
         {!isVerified && <div>Verifying... Please wait</div>}
+        {error && <div>ERROR: {error}</div>}
       </div>
     </div>
   );
